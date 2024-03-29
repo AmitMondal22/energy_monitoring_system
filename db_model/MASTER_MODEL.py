@@ -1,6 +1,6 @@
 from config.db import connect
 from typing import Tuple, List, Any, Optional, Dict
-from utils_package.response import createResponse, createDbResponse
+from utils.response import createResponse, createDbResponse
 
 
 def select_data(table: str, select: Optional[str] = None, condition: Optional[str] = None) -> Optional[List[Tuple]]:

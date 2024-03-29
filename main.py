@@ -36,7 +36,7 @@ app.include_router(auth_routes.auth_routes, prefix="/api/auth", tags=["auth"])
 app.include_router(user_routes.user_rutes, prefix="/api/user", tags=["user"])
 
 # Include user routes
-app.include_router(public_routes.public_routes, prefix="/api/public", tags=["public"])
+app.include_router(public_routes.public_routes, prefix="/api/device", tags=["public_device"])
 
 # Index route
 @app.get('/')
@@ -56,3 +56,10 @@ async def users():
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True)
+    
+    
+# if __name__ == "__main__":
+#     try:
+#         uvicorn.run(app, host="0.0.0.0", port=8000)
+#     except KeyboardInterrupt:
+#         print("KeyboardInterrupt: Stopping the server...")

@@ -29,14 +29,14 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `md_super_admin` (
   `super_admin_id` int NOT NULL,
-  `name` varchar(155) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `email` varchar(155) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `mobile_number` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '0',
-  `address` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `name` varchar(155) NOT NULL,
+  `email` varchar(155) NOT NULL,
+  `mobile_number` varchar(20) NOT NULL DEFAULT '0',
+  `address` text,
   `created_by` int NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 -- --------------------------------------------------------
 
@@ -46,18 +46,18 @@ CREATE TABLE `md_super_admin` (
 
 CREATE TABLE `users` (
   `user_id` bigint NOT NULL,
-  `user_name` varchar(155) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `user_email` varchar(155) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `user_info_id` varchar(155) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `user_active_status` enum('Y','N') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `user_type` enum('S','A','C','U') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT 'S=super admin, a=admin, c=company, U=user',
+  `user_name` varchar(155) NOT NULL,
+  `user_email` varchar(155) NOT NULL,
+  `user_info_id` varchar(155) NOT NULL,
+  `user_active_status` enum('Y','N') NOT NULL,
+  `user_type` enum('S','A','C','U') NOT NULL COMMENT 'S=super admin, a=admin, c=company, U=user',
   `otp_number` int NOT NULL DEFAULT '0',
-  `otp_active_status` enum('N','Y') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `password` varchar(155) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `otp_active_status` enum('N','Y') NOT NULL,
+  `password` varchar(155) NOT NULL,
   `created_by` int NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 --
 -- Dumping data for table `users`

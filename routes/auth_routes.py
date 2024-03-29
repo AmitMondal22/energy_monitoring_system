@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Response
 from controllers.auth import AuthController
 from models import auth_model
-from utils_package.response import errorResponse, successResponse
+from utils.response import errorResponse, successResponse
 import json
 
 auth_routes = APIRouter()

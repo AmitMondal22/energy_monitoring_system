@@ -1,8 +1,8 @@
 from db_model.MASTER_MODEL import select_data, insert_data
-from utils_package.has_password import get_password_hash, verify_password
-from utils_package.otp import generate_otp
-from utils_package.date_time_format import get_current_datetime
-from utils_package.jwt_access import create_access_token
+from utils.has_password import get_password_hash, verify_password
+from utils.otp import generate_otp
+from utils.date_time_format import get_current_datetime
+from utils.jwt_access import create_access_token
 
 
 

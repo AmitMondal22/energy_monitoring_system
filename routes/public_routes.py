@@ -1,38 +1,19 @@
 from fastapi import APIRouter, HTTPException, Response, Depends, Request
-from utils_package.response import errorResponse, successResponse
+from utils.response import errorResponse, successResponse
+from models import device_data_model
+from controllers.device_to_server import EnergyController
 import json
-
-from middleware.MyMiddleware import public_required_middleware
-
 public_routes = APIRouter()
 
 
-# public_routes.middleware("http")(
-#     public_required_middleware
-# )
 
-# # public_routes.get("/abc", tags=["public"], dependencies=[Depends(route_authentication_middleware)])
-# @public_routes.get("/abc", dependencies=[Depends(public_required_middleware)])
-# async def get_abc(request: Request):
-#     try:
-#         user_id = request.user_id
-#         return {"user_id": user_id}
-#     except:
-#         return "error"
-    
-# @public_routes.get("/abc", dependencies=[Depends(public_required_middleware)])
-# async def get_abc(request: Request):
-#     # try:
-#         user_id = request.state.user_id
-#         return {"user_id": user_id}
-#     # except:
-#     #     return "error"
-
-
-@public_routes.get("/abc", dependencies=[Depends(public_required_middleware)])
-async def get_abc(request: Request):
-    # try:
-        user_id = request.state.user_id
-        return {"user_id": user_id}
-    # except:
-    #     raise HTTPException(status_code=500, detail="Internal Server Error")
+@public_routes.get('/energy_data/devices_to_storage')
+async def get_energy_data(data:device_data_model.EnergyDeviceData):
+    try:
+        controllerRes = await EnergyController.get_energy_data(data)   
+        resdata = successResponse(controllerRes, message="User registered successfully")
+        return Response(content=json.dumps(resdata), media_type="application/json", status_code=200)
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
