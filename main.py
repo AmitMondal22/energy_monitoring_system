@@ -10,13 +10,13 @@ from routes import user_routes,auth_routes,public_routes
 
 
 
-
 app = FastAPI()
+
 
 # Set up CORS
 origins = [
-    "http://localhost",
-    "http://localhost:8080",
+    "http://192.168.29.210:8000",
+    "http://localhost:8000"
 ]
 
 # @app.middleware("http")
@@ -28,6 +28,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
 
 # Include user routes
 app.include_router(auth_routes.auth_routes, prefix="/api/auth", tags=["auth"])
@@ -54,9 +56,9 @@ async def users():
         raise HTTPException(status_code=500, detail="Internal server error")
     
 
+
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True)
-    
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
     
 # if __name__ == "__main__":
 #     try:
