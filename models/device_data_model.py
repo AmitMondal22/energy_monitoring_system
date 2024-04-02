@@ -4,6 +4,8 @@ from datetime import date,datetime,time
 
 class EnergyDeviceData(BaseModel):
     device_id: str
+    device: str
+    do_channel: str
     device_type: str
     device_location: str
     device_run_hours: float # number of hours the device has been running
@@ -17,3 +19,15 @@ class EnergyDeviceData(BaseModel):
     
    
 # $flow=(round((100*$r->rpm)/2800, 2) >100)?100:round((100*$r->rpm)/2800, 2);
+
+
+class DeviceAutoRegister(BaseModel):
+    do_channel:str
+    model:str
+    lat:str
+    lon:str
+    imei_no:str
+
+
+class CheckedDevices(BaseModel):
+    device:str
