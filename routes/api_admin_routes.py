@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Response
+from fastapi import APIRouter, HTTPException, Response,WebSocket,WebSocketDisconnect
 
 from controllers.admin import ManageUserController, Organization,DeviceManageUserController,DeviceController
 
@@ -6,10 +6,57 @@ from models.organization_model import AddOrganization, EditOrganization, DeleteO
 from models.manage_user_model import AddUser, EditUser,DeleteUser,UserDeviceAdd,UserDeviceEdit,UserDeviceDelete
 
 
+
+
+from utils.ConnectionManager import ConnectionManager
 from utils.response import errorResponse, successResponse
 import json
 
 api_admin_routes = APIRouter()
+manager = ConnectionManager()
+
+# ==========================================================================
+# ==========================================================================
+
+# both
+@api_admin_routes.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await manager.connect(websocket)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            await manager.send_personal_message(f"Received:{data}",websocket)
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
+        await manager.send_personal_message("Bye!!!",websocket)
+        
+#  send_message      
+@api_admin_routes.get("/send_message")
+async def send_message(message: str):
+    await manager.broadcast(message)
+    return {"message": "Sent message: {}".format(message)}
+
+# daynamic data
+@api_admin_routes.websocket("/ws/{user_id}")
+async def websocket_endpoint(websocket: WebSocket, user_id: int):
+    await manager.connect(user_id, websocket)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            await manager.send_personal_message(user_id, f"Message '{data}' received from user {user_id}")
+    except Exception as e:
+        manager.disconnect(user_id)
+        print(f"Connection with user {user_id} closed.")
+        
+@api_admin_routes.post("/send_message/{user_id}")
+async def send_message(user_id: int, message: str):
+    await manager.send_personal_message(user_id, message)
+    return {"message": "Message sent successfully"}
+
+
+
+
+
 
 # ==========================================================================
 # ==========================================================================
