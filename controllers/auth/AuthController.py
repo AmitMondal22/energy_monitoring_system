@@ -1,4 +1,4 @@
-from db_model.MASTER_MODEL import select_data, insert_data
+from db_model.MASTER_MODEL import select_data, insert_data,select_one_data
 from utils.has_password import get_password_hash, verify_password
 from utils.otp import generate_otp
 from utils.date_time_format import get_current_datetime
@@ -30,12 +30,13 @@ async def login(user) -> dict:
     try:
         condition = f"user_email = '{user.email}'"
         select = f"user_id, user_name, user_email, user_info_id, user_active_status, user_type, otp_number, otp_active_status, password, created_by, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at"
-        user_data=select_data("users",select,None)
+        user_data=select_one_data("users",select,condition,None)
+        print("User data",user_data)
         if user_data is None:
             raise ValueError("User login failed")
         else:
-            if verify_password(user.password, user_data[0]['password']) is False:
-                raise ValueError("User login failed")
+            if verify_password(user.password, user_data['password']) is False:
+                raise ValueError("Password mismatch")
             else:
                 # Create and return JWT token
                 access_token = create_access_token(data={"sub": user_data})
