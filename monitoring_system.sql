@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Apr 02, 2024 at 05:04 PM
+-- Generation Time: Apr 06, 2024 at 11:35 AM
 -- Server version: 8.0.36-0ubuntu0.22.04.1
 -- PHP Version: 8.1.2-1ubuntu2.14
 
@@ -47,7 +47,8 @@ CREATE TABLE `del_users` (
 --
 
 INSERT INTO `del_users` (`user_id`, `user_name`, `user_email`, `user_info_id`, `user_active_status`, `user_type`, `otp_number`, `otp_active_status`, `password`, `created_by`, `created_at`, `updated_at`) VALUES
-(18, 'test user', 'hjgjhg@jhgbk', '1', 'Y', 'U', 989484, 'N', '$2b$12$oItsDdmLHXxaZANA6AW7zuQXIzWk6.nOKorAZ5zThKNJdYL.5ZPIm', 0, '2024-04-01 07:32:41', '2024-04-01 09:44:04');
+(18, 'test user', 'hjgjhg@jhgbk', '1', 'Y', 'U', 989484, 'N', '$2b$12$oItsDdmLHXxaZANA6AW7zuQXIzWk6.nOKorAZ5zThKNJdYL.5ZPIm', 0, '2024-04-01 07:32:41', '2024-04-01 09:44:04'),
+(22, 'XXX', 'pm@email.com', '1', 'Y', 'U', 282668, 'N', '$2b$12$kHsXOzCcV3CYu2OSxEqmr.1WmSKEqHxTlCdnjIKqsKuZ3X9WP7wgW', 0, '2024-04-04 18:19:39', NULL);
 
 -- --------------------------------------------------------
 
@@ -113,7 +114,7 @@ CREATE TABLE `md_organization` (
 --
 
 INSERT INTO `md_organization` (`organization_id`, `organization_name`, `created_by`, `created_at`, `updated_at`) VALUES
-(1, 'test2', 1, '2024-04-01 09:36:48', NULL);
+(1, 'test3', 1, '2024-04-01 09:36:48', '2024-04-04 16:24:17');
 
 -- --------------------------------------------------------
 
@@ -184,7 +185,8 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`user_id`, `user_name`, `user_email`, `user_info_id`, `user_active_status`, `user_type`, `otp_number`, `otp_active_status`, `password`, `created_by`, `created_at`, `updated_at`) VALUES
 (16, 'Amit Mondal', 'amit@iotblitz.com', '1', 'Y', 'S', 197840, 'N', '$2b$12$daoApXNYu5py8wxYFiwNc.arZgmYS04hPiL4tnmD7YqwmgbOrTIUq', 0, '2024-03-27 11:28:35', NULL),
 (17, 'test', 'abc@jkhjk.fv', '1', 'Y', 'A', 356535, 'N', '$2b$12$NnD4fOsjeRgCNPHp.mS73uk4Jvt6dtMSepTg9Lx3eg51Aewc5r.va', 0, '2024-03-29 07:28:01', NULL),
-(20, 'hello', 'hgydyt@suo.uyt', '1', 'Y', 'U', 859093, 'N', '$2b$12$XvbjGoMdjfT7KVJK.VBCUeU/jRUiyQJbRL6V7CwI6s59gL0YaYSX6', 0, '2024-04-01 09:53:37', NULL);
+(20, 'hello              kgkgk', 'hgydyt@suo.uyt', '1', 'Y', 'U', 859093, 'N', '$2b$12$XvbjGoMdjfT7KVJK.VBCUeU/jRUiyQJbRL6V7CwI6s59gL0YaYSX6', 0, '2024-04-01 09:53:37', '2024-04-04 18:34:23'),
+(21, 'PARTHA', 'partha@email.com', '1', 'Y', 'A', 585004, 'N', '$2b$12$daoApXNYu5py8wxYFiwNc.arZgmYS04hPiL4tnmD7YqwmgbOrTIUq', 0, '2024-04-03 15:36:12', NULL);
 
 --
 -- Indexes for dumped tables
@@ -245,7 +247,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `del_users`
 --
 ALTER TABLE `del_users`
-  MODIFY `user_id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `user_id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `md_device`
@@ -263,7 +265,7 @@ ALTER TABLE `md_manage_user_device`
 -- AUTO_INCREMENT for table `md_organization`
 --
 ALTER TABLE `md_organization`
-  MODIFY `organization_id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `organization_id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `md_super_admin`
@@ -281,7 +283,7 @@ ALTER TABLE `td_energy_data`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `user_id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
