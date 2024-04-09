@@ -1,23 +1,25 @@
-from fastapi import FastAPI, HTTPException,WebSocket, WebSocketDisconnect, WebSocket
+from fastapi import FastAPI, HTTPException,WebSocket, WebSocketDisconnect, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 import uvicorn
 
 from json import JSONEncoder
 from datetime import datetime, date
-from routes import devices_routes, user_routes,auth_routes,api_admin_routes
+from routes import api_client_routes, devices_routes, user_routes,auth_routes
 
 
 import paho.mqtt.publish as publish
 import paho.mqtt.client as mqtt
 
+from utils.WSPublicConnectionManager import WSPublicConnectionManager
 
 
 
 app = FastAPI()
+manager = WSPublicConnectionManager()
 
 # MQTT Broker settings
-MQTT_BROKER = "mqtt.eclipse.org"
+MQTT_BROKER = "techavoiot.co.in"
 MQTT_PORT = 1883
 MQTT_TOPIC = "test/topic"
 
@@ -48,36 +50,64 @@ app.add_middleware(
 # =============================================
             # mqtt
 # =============================================
-# # MQTT on_connect callback
-# def on_connect(client, userdata, flags, rc):
-#     print("Connected with result code "+str(rc))
-#     client.subscribe(MQTT_TOPIC)
+# MQTT on_connect callback
+def on_connect(client, userdata, flags, rc):
+    print("Connected with result code "+str(rc))
+    client.subscribe(MQTT_TOPIC)
     
-# # MQTT on_message callback
-# def on_message(client, userdata, msg):
-#     print(msg.topic+" "+str(msg.payload))
+# MQTT on_message callback
+def on_message(client, userdata, msg):
+    print(msg.topic+" "+str(msg.payload))
 
-# # Set the callback functions
-# mqtt_client.on_connect = on_connect
-# mqtt_client.on_message = on_message
+# Set the callback functions
+mqtt_client.on_connect = on_connect
+mqtt_client.on_message = on_message
 
-# # Connect to MQTT Broker
-# mqtt_client.connect(MQTT_BROKER, MQTT_PORT, 60)
-# mqtt_client.loop_start()  # Start the loop to listen for MQTT messages
+# Connect to MQTT Broker
+mqtt_client.connect(MQTT_BROKER, MQTT_PORT, 60)
+mqtt_client.loop_start()  # Start the loop to listen for MQTT messages
 
 
-# @app.get("/publish/")
-# async def publish_message(message: str):
-#     mqtt_client.publish(MQTT_TOPIC, message)
-#     return {"message": "Published message: {}".format(message)}
+@app.get("/publish/")
+async def publish_message(message: str):
+    try:
+        # publish.single(MQTT_TOPIC, message, hostname=MQTT_BROKER)
+        # return {"message": "Published message: {}".format(message)}
+        mqtt_client.publish(MQTT_TOPIC, message)
+        return {"message": "Published message: {}".format(message)}
+    except Exception as e:
+        return {"error": str(e)}
 
-# @app.websocket("/subscribe/")
+
+
+
+
+@app.websocket("/wsmqtt")
+async def websocket_endpoint(websocket: WebSocket):
+    await manager.self_connect(websocket)
+    
+    try:
+        while True:
+            message = mqtt_client.loop()
+            if message:
+                data = await websocket.receive_text()
+                await manager.self_send_personal_message(f"Received:{data}",websocket)
+    except WebSocketDisconnect:
+        manager.self_disconnect(websocket)
+        await manager.self_send_personal_message("Bye!!!",websocket)
+        
+
+# @app.websocket("/subscribe_mqtt")
 # async def websocket_endpoint(websocket: WebSocket):
-#     await websocket.accept()
-#     while True:
-#         message = mqtt_client.loop()
-#         if message:
-#             await websocket.send_text(message)
+#     try:
+#         await websocket.accept()
+#         while True:
+#             message = mqtt_client.loop()
+#             if message:
+#                 await websocket.send_text(message)
+#     except WebSocketDisconnect:
+#         await websocket.remove(websocket)
+#         await websocket.send_text("Bye!!!",websocket)
 
 
 # =============================================
@@ -108,7 +138,7 @@ app.include_router(devices_routes.devices_routes, prefix="/api/device", tags=["d
 
 
 # Include user routes
-app.include_router(api_admin_routes.api_admin_routes, prefix="/api/admin", tags=["admin"])
+app.include_router(api_client_routes.api_client_routes, prefix="/api/client", tags=["client"])
 
 # Index route
 @app.get('/')

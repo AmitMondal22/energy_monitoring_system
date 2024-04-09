@@ -29,28 +29,21 @@ class ConnectionManager:
     #     """init method, keeping track of connections"""
     #    self.active_connections: Dict[int, WebSocket] = {}
 
-    # async def connect(self, websocket: WebSocket):
+    # async def self_connect(self, websocket: WebSocket):
     #     """connect event"""
     #     await websocket.accept()
     #     self.active_connections.append(websocket)
 
-    # async def send_personal_message(self, message: str, websocket: WebSocket):
+    # async def self_send_personal_message(self, message: str, websocket: WebSocket):
     #     """Direct Message"""
     #     await websocket.send_text(message)
 
-    # def disconnect(self, websocket: WebSocket):
+    # def self_disconnect(self, websocket: WebSocket):
     #     """disconnect event"""
     #     self.active_connections.remove(websocket)
 
-    # async def broadcast(self, message: str):
+    # async def self_broadcast(self, message: str):
     #     """Broadcast message to all active connections"""
     #     for connection in self.active_connections:
     #         await connection.send_text(message)
             
-    # async def send_personal_message(self, user_id: int, message: str):
-    #     if user_id in self.active_connections:
-    #         await self.active_connections[user_id].send_text(message)
-    
-    # async def send_personal_message(self, user_id: int, message: str):
-    #     if user_id in self.active_connections:
-    #         await self.active_connections[user_id].send_text(message)

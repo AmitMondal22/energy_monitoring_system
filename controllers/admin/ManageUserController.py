@@ -26,11 +26,11 @@ def add_user(user):
 
 
 @staticmethod
-def list_user():
+def list_user(params):
     try:
         select="u.user_id, u.user_name, u.user_email, u.user_info_id, u.user_active_status, u.user_type, u.otp_number, u.otp_active_status, u.created_by, DATE_FORMAT(u.created_at, '%Y-%m-%d %H:%i:%s') AS created_at, o.organization_name, o.organization_id"
         table="users as u, md_organization as o"
-        condition = "u.user_info_id = o.organization_id AND u.user_type = 'U'"
+        condition = f"u.user_info_id = o.organization_id AND o.client_id={params.client_id} AND u.user_type = 'U'"
         data = select_data(table, select,condition)
         return data
     except Exception as e:
@@ -38,11 +38,11 @@ def list_user():
 
 
 @staticmethod
-def user_info(user_id):
+def user_info(params):
     try:
         select="u.user_id, u.user_name, u.user_email, u.user_info_id, u.user_active_status, u.user_type, u.otp_number, u.otp_active_status, u.created_by, DATE_FORMAT(u.created_at, '%Y-%m-%d %H:%i:%s') AS created_at, o.organization_name, o.organization_id"
         table="users as u, md_organization as o"
-        condition = f"u.user_info_id = o.organization_id AND u.user_id={user_id} AND u.user_type = 'U'"
+        condition = f"u.user_info_id = o.organization_id AND u.user_id={params.user_id} AND o.client_id={params.client_id} AND u.user_type = 'U'"
         data = select_one_data(table, select,condition)
         return data
     except Exception as e:

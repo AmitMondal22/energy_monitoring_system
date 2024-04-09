@@ -33,6 +33,7 @@ class DeleteUser(BaseModel):
     
     
 class UserDeviceAdd(BaseModel):
+    client_id: int
     organization_id: int
     user_id: int
     device_id: int
@@ -40,6 +41,7 @@ class UserDeviceAdd(BaseModel):
     
     
 class UserDeviceEdit(BaseModel):
+    client_id: int
     organization_id: int
     user_id: int
     device_id: int
@@ -47,4 +49,20 @@ class UserDeviceEdit(BaseModel):
     manage_user_device_id: int
 
 class UserDeviceDelete(BaseModel):
+    client_id: int
     manage_user_device_id: int
+    
+class ListUsers(BaseModel):
+    # organization_id: int
+    client_id: int
+
+class UserInfo(BaseModel):
+    user_id: int
+    client_id: int
+    
+class ClientId(BaseModel):
+    client_id: int
+
+class UserDeviceList(BaseModel):
+    client_id: int
+    organization_id: int

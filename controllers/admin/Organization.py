@@ -7,8 +7,8 @@ def add_organization(organization):
     try:
               
         current_datetime = get_current_datetime()
-        columns = "organization_name, created_by, created_at"
-        value = f"'{organization.organization_name}', {organization.created_by},'{current_datetime}'"
+        columns = "client_id,organization_name, created_by, created_at"
+        value = f"{organization.client_id},'{organization.organization_name}', {organization.created_by},'{current_datetime}'"
         organization_id = insert_data("md_organization", columns, value)
         if organization_id is None:
             raise ValueError("organization registration failed")
@@ -20,10 +20,11 @@ def add_organization(organization):
         raise e
     
 @staticmethod
-def list_organization():
+def list_organization(params):
     try:
-        select="organization_id, organization_name, created_by, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at"
-        data = select_data("md_organization", select)
+        select="client_id,organization_id, organization_name, created_by, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at"
+        condition =f"client_id = {params.client_id}"
+        data = select_data("md_organization", select,condition)
         return data
     except Exception as e:
         raise e
@@ -32,7 +33,7 @@ def list_organization():
 @staticmethod
 def edit_organization(organization):
     try:
-        condition = f"organization_id = {organization.organization_id}"
+        condition = f"organization_id = {organization.organization_id} AND client_id={organization.client_id}"
         columns={"organization_name":organization.organization_name,"created_by":organization.created_by,"updated_at":get_current_datetime()}
         data = update_data("md_organization", columns, condition)
         return data
@@ -42,7 +43,7 @@ def edit_organization(organization):
 @staticmethod
 def delete_organization(organization):
     try:
-        condition = f"organization_id = {organization.organization_id}"
+        condition = f"organization_id = {organization.organization_id} AND client_id={organization.client_id}"
         data = delete_data("md_organization", condition)
         return data
     except Exception as e:
