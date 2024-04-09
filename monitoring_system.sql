@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Apr 06, 2024 at 11:35 AM
+-- Generation Time: Apr 09, 2024 at 09:53 PM
 -- Server version: 8.0.36-0ubuntu0.22.04.1
 -- PHP Version: 8.1.2-1ubuntu2.14
 
@@ -53,6 +53,48 @@ INSERT INTO `del_users` (`user_id`, `user_name`, `user_email`, `user_info_id`, `
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `md_assign_customer_device`
+--
+
+CREATE TABLE `md_assign_customer_device` (
+  `assign_customer_device_id` int NOT NULL,
+  `device_id` int NOT NULL,
+  `device` varchar(155) NOT NULL,
+  `client_id` int NOT NULL,
+  `created_by` int NOT NULL,
+  `updated_by` int DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `md_client`
+--
+
+CREATE TABLE `md_client` (
+  `client_id` int NOT NULL,
+  `client_name` varchar(255) NOT NULL,
+  `client_address` text NOT NULL,
+  `client_mobile` varchar(20) NOT NULL,
+  `client_email` varchar(155) NOT NULL,
+  `create_by` int NOT NULL,
+  `updated_by` int DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `md_client`
+--
+
+INSERT INTO `md_client` (`client_id`, `client_name`, `client_address`, `client_mobile`, `client_email`, `create_by`, `updated_by`, `created_at`, `updated_at`) VALUES
+(1, 'client name', 'client address', '1111111', 'client@email.com', 1, NULL, '2024-04-09 05:56:50', NULL);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `md_device`
 --
 
@@ -87,9 +129,11 @@ INSERT INTO `md_device` (`device_id`, `device`, `do_channel`, `model`, `lat`, `l
 
 CREATE TABLE `md_manage_user_device` (
   `manage_user_device_id` bigint NOT NULL,
+  `client_id` int NOT NULL,
   `organization_id` int NOT NULL,
   `user_id` int NOT NULL,
   `device_id` int NOT NULL,
+  `device` varchar(155) NOT NULL,
   `created_by` int NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -103,6 +147,7 @@ CREATE TABLE `md_manage_user_device` (
 
 CREATE TABLE `md_organization` (
   `organization_id` bigint NOT NULL,
+  `client_id` int NOT NULL,
   `organization_name` varchar(155) NOT NULL,
   `created_by` int NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -113,8 +158,8 @@ CREATE TABLE `md_organization` (
 -- Dumping data for table `md_organization`
 --
 
-INSERT INTO `md_organization` (`organization_id`, `organization_name`, `created_by`, `created_at`, `updated_at`) VALUES
-(1, 'test3', 1, '2024-04-01 09:36:48', '2024-04-04 16:24:17');
+INSERT INTO `md_organization` (`organization_id`, `client_id`, `organization_name`, `created_by`, `created_at`, `updated_at`) VALUES
+(5, 1, 'tttttt', 1, '2024-04-09 10:32:35', NULL);
 
 -- --------------------------------------------------------
 
@@ -167,9 +212,9 @@ CREATE TABLE `users` (
   `user_id` bigint NOT NULL,
   `user_name` varchar(155) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `user_email` varchar(155) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `user_info_id` varchar(155) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `user_info_id` int NOT NULL,
   `user_active_status` enum('Y','N') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `user_type` enum('S','A','C','U') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT 'S=super admin, a=admin, c=company, U=user',
+  `user_type` enum('S','A','C','O','U') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT 'S=super admin, a=admin, c=client,\r\nO=organization U=user',
   `otp_number` int NOT NULL DEFAULT '0',
   `otp_active_status` enum('N','Y') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `password` varchar(155) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
@@ -183,10 +228,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `user_name`, `user_email`, `user_info_id`, `user_active_status`, `user_type`, `otp_number`, `otp_active_status`, `password`, `created_by`, `created_at`, `updated_at`) VALUES
-(16, 'Amit Mondal', 'amit@iotblitz.com', '1', 'Y', 'S', 197840, 'N', '$2b$12$daoApXNYu5py8wxYFiwNc.arZgmYS04hPiL4tnmD7YqwmgbOrTIUq', 0, '2024-03-27 11:28:35', NULL),
-(17, 'test', 'abc@jkhjk.fv', '1', 'Y', 'A', 356535, 'N', '$2b$12$NnD4fOsjeRgCNPHp.mS73uk4Jvt6dtMSepTg9Lx3eg51Aewc5r.va', 0, '2024-03-29 07:28:01', NULL),
-(20, 'hello              kgkgk', 'hgydyt@suo.uyt', '1', 'Y', 'U', 859093, 'N', '$2b$12$XvbjGoMdjfT7KVJK.VBCUeU/jRUiyQJbRL6V7CwI6s59gL0YaYSX6', 0, '2024-04-01 09:53:37', '2024-04-04 18:34:23'),
-(21, 'PARTHA', 'partha@email.com', '1', 'Y', 'A', 585004, 'N', '$2b$12$daoApXNYu5py8wxYFiwNc.arZgmYS04hPiL4tnmD7YqwmgbOrTIUq', 0, '2024-04-03 15:36:12', NULL);
+(21, 'PARTHA', 'partha@email.com', 1, 'Y', 'C', 585004, 'N', '$2b$12$daoApXNYu5py8wxYFiwNc.arZgmYS04hPiL4tnmD7YqwmgbOrTIUq', 0, '2024-04-03 15:36:12', NULL);
 
 --
 -- Indexes for dumped tables
@@ -198,6 +240,18 @@ INSERT INTO `users` (`user_id`, `user_name`, `user_email`, `user_info_id`, `user
 ALTER TABLE `del_users`
   ADD PRIMARY KEY (`user_id`),
   ADD UNIQUE KEY `USER_EMAIL` (`user_email`);
+
+--
+-- Indexes for table `md_assign_customer_device`
+--
+ALTER TABLE `md_assign_customer_device`
+  ADD PRIMARY KEY (`assign_customer_device_id`);
+
+--
+-- Indexes for table `md_client`
+--
+ALTER TABLE `md_client`
+  ADD PRIMARY KEY (`client_id`);
 
 --
 -- Indexes for table `md_device`
@@ -250,6 +304,18 @@ ALTER TABLE `del_users`
   MODIFY `user_id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
+-- AUTO_INCREMENT for table `md_assign_customer_device`
+--
+ALTER TABLE `md_assign_customer_device`
+  MODIFY `assign_customer_device_id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `md_client`
+--
+ALTER TABLE `md_client`
+  MODIFY `client_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT for table `md_device`
 --
 ALTER TABLE `md_device`
@@ -265,7 +331,7 @@ ALTER TABLE `md_manage_user_device`
 -- AUTO_INCREMENT for table `md_organization`
 --
 ALTER TABLE `md_organization`
-  MODIFY `organization_id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `organization_id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `md_super_admin`
