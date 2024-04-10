@@ -2,10 +2,11 @@ from fastapi import FastAPI, HTTPException,WebSocket, WebSocketDisconnect, WebSo
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 import uvicorn
+import time
 
 from json import JSONEncoder
 from datetime import datetime, date
-from routes import api_client_routes, devices_routes, user_routes,auth_routes
+from routes import api_client_routes, devices_routes, user_routes,auth_routes,mqtt_routes
 
 
 import paho.mqtt.publish as publish
@@ -47,54 +48,78 @@ app.add_middleware(
 
 
 
-# =============================================
-            # mqtt
-# =============================================
-# MQTT on_connect callback
-def on_connect(client, userdata, flags, rc):
-    print("Connected with result code "+str(rc))
-    client.subscribe(MQTT_TOPIC)
+# # =============================================
+#             # mqtt
+# # =============================================
+# # MQTT on_connect callback
+# def on_connect(client, userdata, flags, rc):
+#     print("Connected with result code "+str(rc))
+#     client.subscribe(MQTT_TOPIC)
     
-# MQTT on_message callback
-def on_message(client, userdata, msg):
-    print(msg.topic+" "+str(msg.payload))
+# # MQTT on_message callback
+# def on_message(client, userdata, msg):
+#     print(msg.topic+" "+str(msg.payload))
 
-# Set the callback functions
-mqtt_client.on_connect = on_connect
-mqtt_client.on_message = on_message
+# # Set the callback functions
+# mqtt_client.on_connect = on_connect
+# mqtt_client.on_message = on_message
 
-# Connect to MQTT Broker
-mqtt_client.connect(MQTT_BROKER, MQTT_PORT, 60)
-mqtt_client.loop_start()  # Start the loop to listen for MQTT messages
-
-
-@app.get("/publish/")
-async def publish_message(message: str):
-    try:
-        # publish.single(MQTT_TOPIC, message, hostname=MQTT_BROKER)
-        # return {"message": "Published message: {}".format(message)}
-        mqtt_client.publish(MQTT_TOPIC, message)
-        return {"message": "Published message: {}".format(message)}
-    except Exception as e:
-        return {"error": str(e)}
+# # Connect to MQTT Broker
+# mqtt_client.connect(MQTT_BROKER, MQTT_PORT, 60)
+# mqtt_client.loop_start()  # Start the loop to listen for MQTT messages
 
 
+# @app.post("/publish/")
+# async def publish_message(message_data: dict):
+#     try:
+#         # publish.single(MQTT_TOPIC, message, hostname=MQTT_BROKER)
+#         # return {"message": "Published message: {}".format(message)}
+        
+#         message = message_data
+#         if message:
+#             mqtt_client.publish(MQTT_TOPIC, message)
+#             return {"message": "Published message: {}".format(message)}
+#         else:
+#             return {"error": "Message not provided in JSON data"}
+        
+#         # mqtt_client.publish(MQTT_TOPIC, message)
+#         # return {"message": "Published message: {}".format(message)}
+#     except Exception as e:
+#         return {"error": str(e)}
 
 
 
-@app.websocket("/wsmqtt")
-async def websocket_endpoint(websocket: WebSocket):
-    await manager.self_connect(websocket)
+
+
+# # @app.websocket("/wsmqtt")
+# # async def websocket_endpoint(websocket: WebSocket):
+# #     await manager.self_connect(websocket)
     
-    try:
-        while True:
-            message = mqtt_client.loop()
-            if message:
-                data = await websocket.receive_text()
-                await manager.self_send_personal_message(f"Received:{data}",websocket)
-    except WebSocketDisconnect:
-        manager.self_disconnect(websocket)
-        await manager.self_send_personal_message("Bye!!!",websocket)
+# #     try:
+# #         while True:
+# #             message = mqtt_client.loop()
+# #             if message:
+# #                 data = await websocket.receive_text()
+# #                 await manager.self_send_personal_message(f"Received:{data}",websocket)
+# #     except WebSocketDisconnect:
+# #         manager.self_disconnect(websocket)
+# #         await manager.self_send_personal_message("Bye!!!",websocket)
+        
+
+
+        
+# @app.websocket("/wsmqtt")
+# async def websocket_endpoint(websocket: WebSocket):
+#     await manager.self_connect(websocket)
+#     try:
+#         while True:
+#             mqtt_client.loop_start()
+#             time.sleep(1)
+#     except WebSocketDisconnect:
+#         manager.self_disconnect(websocket)
+#         await manager.self_send_personal_message("Bye!!!", websocket)
+#     finally:
+#         mqtt_client.disconnect()
         
 
 # @app.websocket("/subscribe_mqtt")
@@ -110,8 +135,8 @@ async def websocket_endpoint(websocket: WebSocket):
 #         await websocket.send_text("Bye!!!",websocket)
 
 
-# =============================================
-# =============================================
+# # =============================================
+# # =============================================
 
 
 
@@ -139,6 +164,11 @@ app.include_router(devices_routes.devices_routes, prefix="/api/device", tags=["d
 
 # Include user routes
 app.include_router(api_client_routes.api_client_routes, prefix="/api/client", tags=["client"])
+
+
+
+# Include user routes
+app.include_router(mqtt_routes.mqtt_routes, prefix="/api/mqtt", tags=["mqtt"])
 
 # Index route
 @app.get('/')

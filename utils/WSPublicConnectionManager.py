@@ -21,7 +21,7 @@ class WSPublicConnectionManager:
 
     def self_disconnect(self, websocket: WebSocket):
         """disconnect event"""
-        for connection_id, connection in self.active_connections.items():
+        for connection_id, connection in list(self.active_connections.items()):
             if connection == websocket:
                 del self.active_connections[connection_id]
                 break
