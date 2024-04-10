@@ -99,6 +99,7 @@ def insert_data(table: str, column: str, row_data) -> Optional[int]:
         cursor = conne.cursor()
         conne.start_transaction()
         query = f"INSERT INTO {table} ({column}) VALUES ({row_data})"
+        print(query)
         cursor.execute(query)
         conne.commit()  # Commit the transaction
         inserted_id = cursor.lastrowid  # Get the ID of the last inserted row
