@@ -31,3 +31,10 @@ class DeviceAutoRegister(BaseModel):
 
 class CheckedDevices(BaseModel):
     device:str
+    
+class EnergyData(BaseModel):
+    client_id: int
+    device_id: int
+    device: str
+    start_date: date
+    end_date: date

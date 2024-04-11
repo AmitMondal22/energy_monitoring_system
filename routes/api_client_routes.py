@@ -1,19 +1,20 @@
 from fastapi import APIRouter, HTTPException, Response,WebSocket,WebSocketDisconnect
 
-from controllers.admin import ManageUserController, Organization,DeviceManageUserController,DeviceController
+from controllers.admin import ClientController, ManageUserController, DeviceManageUserController,DeviceController
 
 from models.organization_model import AddOrganization, EditOrganization, DeleteOrganization,ListOrganization
 from models.manage_user_model import AddUser, EditUser,DeleteUser,UserDeviceAdd,UserDeviceEdit,UserDeviceDelete,ListUsers,UserInfo,ClientId
+from models.device_data_model import EnergyData
+from Library.DecimalEncoder import DecimalEncoder
 
 
 
-
-from utils.ConnectionManager import ConnectionManager
+from Library.WsConnectionManagerClient import WsConnectionManagerClient
 from utils.response import errorResponse, successResponse
 import json
 
 api_client_routes = APIRouter()
-manager = ConnectionManager()
+manager = WsConnectionManagerClient()
 
 # ==========================================================================
 # ==========================================================================
@@ -65,7 +66,7 @@ async def send_message(user_id: int, message: str):
 @api_client_routes.post("/manage_organization/add")
 async def add_organization(organization:AddOrganization):
     try:
-        data = Organization.add_organization(organization)   
+        data = ClientController.add_organization(organization)   
         resdata = successResponse(data, message="User registered successfully")
         return Response(content=json.dumps(resdata), media_type="application/json", status_code=200)
     except ValueError as ve:
@@ -82,7 +83,7 @@ async def add_organization(organization:AddOrganization):
 async def list_organization(params:ListOrganization):
     try:
         # print(params)
-        data = Organization.list_organization(params)
+        data = ClientController.list_organization(params)
         resdata = successResponse(data, message="List of organizations")
         return Response(content=json.dumps(resdata), media_type="application/json", status_code=200)
     except ValueError as ve:
@@ -95,7 +96,7 @@ async def list_organization(params:ListOrganization):
 @api_client_routes.post("/manage_organization/edit")
 async def edit_organization(organization:EditOrganization):
     try:
-        data = Organization.edit_organization(organization)
+        data = ClientController.edit_organization(organization)
         resdata = successResponse(data, message="List of organizations")
         return Response(content=json.dumps(resdata), media_type="application/json", status_code=200)
     except ValueError as ve:
@@ -109,7 +110,7 @@ async def edit_organization(organization:EditOrganization):
 @api_client_routes.post("/manage_organization/delete")
 async def delete_organization(organization:DeleteOrganization):
     try:
-        data = Organization.delete_organization(organization)
+        data = ClientController.delete_organization(organization)
         resdata = successResponse(data, message="Organization deleted successfully")
         return Response(content=json.dumps(resdata), media_type="application/json", status_code=200)
     except ValueError as ve:
@@ -261,6 +262,22 @@ async def list_device(params:ClientId):
         data = await DeviceController.list_device(params)
         resdata = successResponse(data, message="List of devices")
         return Response(content=json.dumps(resdata), media_type="application/json", status_code=200)
+    except ValueError as ve:
+        # If there's a ValueError, return a 400 Bad Request with the error message
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        # For any other unexpected error, return a 500 Internal Server Error
+        raise HTTPException(status_code=500, detail="Internal server error")
+    
+    
+# =================================================================================================
+# =================================================================================================
+@api_client_routes.post("/devices/energy_data")
+async def energy_data(params:EnergyData):
+    try:
+        data = ClientController.energy_data(params)
+        resdata = successResponse(data, message="devices Data")
+        return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
     except ValueError as ve:
         # If there's a ValueError, return a 400 Bad Request with the error message
         raise HTTPException(status_code=400, detail=str(ve))

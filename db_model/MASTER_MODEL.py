@@ -12,9 +12,11 @@ def select_data(table: str, select: Optional[str] = None, condition: Optional[st
         if order_by:
             total_query += f" ORDER BY {order_by}"
         conne = connect()
+        print(">>>>>>>>>>>>>>>>>>>>",total_query)
         cursor = conne.cursor()
         cursor.execute(total_query)
         records = cursor.fetchall()
+        print("///////////////////////",records)
         result = createDbResponse(records, cursor.column_names, 1)
         return result
     except Exception as e:

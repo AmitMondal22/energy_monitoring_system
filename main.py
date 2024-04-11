@@ -2,9 +2,9 @@ from fastapi import FastAPI, HTTPException,WebSocket, WebSocketDisconnect, WebSo
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from json import JSONEncoder
-from datetime import datetime
+from datetime import date, datetime, timedelta
 from routes import api_client_routes, devices_routes, user_routes,auth_routes,mqtt_routes
-
+from decimal import Decimal
 import uvicorn
 
 
@@ -36,9 +36,16 @@ app.add_middleware(
 # Custom JSON encoder
 class CustomJSONEncoder(JSONEncoder):
     def default(self, obj):
-        if isinstance(obj, datetime):
+        if isinstance(obj, Decimal):
+            return str(obj)
+        elif isinstance(obj, date):
+            return obj.isoformat()
+        elif isinstance(obj, datetime):
             return obj.strftime('%Y-%m-%d %H:%M:%S')
-        return super().default(obj)
+        elif isinstance(obj, timedelta):
+            return str(obj)
+        else:
+            return super().default(obj)
 
 # Set the custom JSON encoder for FastAPI
 app.json_encoder = CustomJSONEncoder

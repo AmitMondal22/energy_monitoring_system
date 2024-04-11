@@ -66,3 +66,5 @@ class ClientId(BaseModel):
 class UserDeviceList(BaseModel):
     client_id: int
     organization_id: int
+    
+

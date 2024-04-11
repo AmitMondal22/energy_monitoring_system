@@ -1,6 +1,6 @@
 from fastapi import WebSocket
 from typing import Dict
-class ConnectionManager:
+class WsConnectionManager:
     """Class defining socket events"""
     
     def __init__(self):
