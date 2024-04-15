@@ -19,7 +19,6 @@ async def register(user) -> dict:
             raise ValueError("User registration failed")
         else:
             user_data = {"user_id": user_id, "name": user.name, "email": user.email}
-            print("User registration successful",user_data)
         return user_data
     except Exception as e:
         raise e

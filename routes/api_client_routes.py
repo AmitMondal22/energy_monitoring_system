@@ -6,15 +6,15 @@ from models.organization_model import AddOrganization, EditOrganization, DeleteO
 from models.manage_user_model import AddUser, EditUser,DeleteUser,UserDeviceAdd,UserDeviceEdit,UserDeviceDelete,ListUsers,UserInfo,ClientId
 from models.device_data_model import EnergyData
 from Library.DecimalEncoder import DecimalEncoder
+from db_model.MASTER_MODEL import select_one_data
 
 
-
-from Library.WsConnectionManagerClient import WsConnectionManagerClient
+from Library.WsConnectionManager import WsConnectionManager
 from utils.response import errorResponse, successResponse
 import json
 
 api_client_routes = APIRouter()
-manager = WsConnectionManagerClient()
+manager = WsConnectionManager()
 
 # ==========================================================================
 # ==========================================================================
@@ -49,16 +49,59 @@ async def websocket_endpoint(websocket: WebSocket, user_id: int):
         manager.disconnect(user_id)
         print(f"Connection with user {user_id} closed.")
         
-@api_client_routes.post("/send_message/{user_id}")
-async def send_message(user_id: int, message: str):
-    await manager.send_personal_message(user_id, message)
+# @api_client_routes.post("/send_message/{user_id}")
+# async def send_message(user_id: int, message: str):
+#     await manager.send_personal_message(user_id, message)
+#     return {"message": "Message sent successfully"}
+
+
+@api_client_routes.post("/send_message/{client_id}/{device_id}/{device}/{message}")
+async def send_message(client_id: int,device_id:int,device:str, message: str):
+    await manager.send_personal_message(client_id, device_id, device, json.dumps(message))
     return {"message": "Message sent successfully"}
 
 
+@api_client_routes.websocket("/ws/{client_id}/{device_id}/{device}")
+async def websocket_endpoint(websocket: WebSocket, client_id: str, device_id: str, device: str):
+    await manager.connect(client_id, device_id, device, websocket)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            await manager.send_personal_message(client_id, device_id, device, f"Message '{data}' received from user {client_id}-{device_id}-{device}")
+    except Exception as e:
+        manager.disconnect(websocket,client_id, device_id, device)
+        print(f"Connection with user {client_id}-{device_id}-{device} closed.")
 
 
-
-
+# ================================================================
+# ================================================================
+class SendEnergySocket:
+    @staticmethod
+    async def send_last_energy_data(client_id, device_id, device):
+        try:
+            # Lazy import inside the function
+            # from Library import WsConnectionManager
+            # manager = WsConnectionManager.WsConnectionManager()
+            
+            select="energy_data_id, client_id, device_id, device, do_channel, device_run_hours, device_dc_bus_voltage, device_output_current, device_settings_freq, device_running_freq, device_rpm, device_flow, date, time, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at"
+            condition = f"device_id = '{device_id}' AND device ='{device}' AND client_id = '{client_id}'"
+            order_by="energy_data_id DESC"
+                
+            lastdata = select_one_data("td_energy_data", select, condition, order_by)
+           
+            await manager.send_personal_message(client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
+            
+            # await manager.send_personal_message(client_id, device_id, device, json.dumps("hello134"))
+            
+            
+            # await manager.send_personal_message(1, 1, "aa", json.dumps("hello world"))
+            print("lastdata last energy data>>>>>>>>>>/////////",lastdata)
+            return lastdata
+        except Exception as e:
+            raise ValueError("Could not fetch data")
+# ================================================================
+# ================================================================
+    
 # ==========================================================================
 # ==========================================================================
 

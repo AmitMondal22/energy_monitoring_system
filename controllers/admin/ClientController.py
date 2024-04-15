@@ -14,7 +14,6 @@ def add_organization(organization):
             raise ValueError("organization registration failed")
         else:
             user_data = {"user_id": organization_id, "organization_name": organization.organization_name, "created_by": organization.created_by}
-            print("User registration successful",user_data)
         return user_data
     except Exception as e:
         raise e

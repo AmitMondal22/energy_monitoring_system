@@ -17,7 +17,6 @@ async def device_auto_register(data):
         
         device_name = select_last_data("md_device", select,None,"created_at")
         if device_name is not None:
-            print("device_name>>>>>>>>>>>>>>>>>",device_name['device'])
             u_id = increment_string(device_name['device'])
             
         else:
@@ -31,7 +30,6 @@ async def device_auto_register(data):
             raise ValueError("device registration failed")
         else:
             device_data = {"device_id": device_id, "device_name": u_id, "do_channel": data.do_channel, "model": data.model, "lat": data.lat, "lon": data.lon, "imei_no": data.imei_no, "created_at": current_datetime}
-            print("device registration successful",device_data)
         return device_data
     except Exception as e:
         raise ValueError("Could not fetch data")

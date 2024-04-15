@@ -6,7 +6,7 @@ class WsConnectionManager:
     """Class defining socket events"""
     
     def __init__(self):
-        # self.active_connections: Dict[str, List[WebSocket]] = {}
+        self.active_connections: Dict[str, List[WebSocket]] = {}
         self.connection_file = "active_connections.json"
         self.load_connections()
 
@@ -54,7 +54,7 @@ class WsConnectionManager:
 
     async def send_personal_message(self, client_id: str, device_id: str, device: str, message: str):
         user_id = f"{client_id}-{device_id}-{device}"
-        print("activity connections///////////////",user_id)
+        print("activity connections///////////////",self.active_connections)
         if user_id in self.active_connections:
             for websocket in self.active_connections[user_id]:
                 await websocket.send_text(message)

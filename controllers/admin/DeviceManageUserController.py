@@ -12,7 +12,6 @@ def add_device(device):
             raise ValueError("device registration failed")
         else:
             device_data = {"device_id": device_id, "device_name": device.device_name, "device_info_id": device.device_info_id, "created_by": device.created_by}
-            print("device registration successful",device_data)
         return device_data
     except Exception as e:
         raise e

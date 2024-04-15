@@ -20,7 +20,6 @@ mqtt_client.connect()
 @mqtt_routes.on_event("startup")
 async def startup_event():
  mqtt_client.subscribe([("hello", 0),("hello1", 0)])
- print("message: Subscribed to topics")
     
     
     
@@ -31,6 +30,7 @@ async def publish_message(message_data: MqttEnergyDeviceData):
         
         # mqtt_client = MqttLibraryClass("test/topic")
         mqtt_client.publish("hello", message_data.json(), qos=0)
+        return {"message": "Message published successfully"}
     except Exception as e:
         return {"error": str(e)}
 

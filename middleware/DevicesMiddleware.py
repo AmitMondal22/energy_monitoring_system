@@ -25,7 +25,6 @@ class DevicesMiddleware:
     async def __call__(self, request: Request, call_next):
         # Check Authorization header
         token = request.headers.get("Authorization")
-        print("////////////////////////////////"+token)
         if token != "123456":
             raise HTTPException(status_code=401, detail="Unauthorized")
         

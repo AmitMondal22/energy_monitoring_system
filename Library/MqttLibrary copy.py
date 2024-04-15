@@ -16,7 +16,6 @@ mqtt_client = mqtt.Client()
 
 # MQTT on_connect callback
 def on_connect(client, userdata, flags, rc):
-    print("Connected with result code "+str(rc))
     client.subscribe(MQTT_TOPIC)
     
 # MQTT on_message callback

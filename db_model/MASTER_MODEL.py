@@ -33,7 +33,7 @@ def select_data(table: str, select: Optional[str] = None, condition: Optional[st
             
 
 def select_one_data(table: str, select: Optional[str] = None, condition: Optional[str] = None,order_by:Optional[str]=None) -> Optional[Tuple]:
-    try:
+    # try:
         select_clause = select if select else "*"
         total_query = f"SELECT {select_clause} FROM {table}"
         if condition:
@@ -49,16 +49,16 @@ def select_one_data(table: str, select: Optional[str] = None, condition: Optiona
 
         if records:
             return result
-    except Exception as e:
-        print(e)
-        if conne:
-            conne.rollback()  # Rollback the transaction if an error occurs
-        raise e
-    finally:
-        if cursor:
-            cursor.close()
-        if conne:
-            conne.close()
+    # except Exception as e:
+    #     print(e)
+    #     if conne:
+    #         conne.rollback()  # Rollback the transaction if an error occurs
+    #     raise e
+    # finally:
+    #     if cursor:
+    #         cursor.close()
+    #     if conne:
+    #         conne.close()
             
             
             

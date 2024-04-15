@@ -3,6 +3,7 @@ from datetime import date,datetime,time
 
 
 class EnergyDeviceData(BaseModel):
+    client_id: int
     device_id: str
     device: str
     do_channel: str
@@ -38,3 +39,8 @@ class EnergyData(BaseModel):
     device: str
     start_date: date
     end_date: date
+    
+class WsEnergyData(BaseModel):
+    client_id: int
+    device_id: int
+    device: str

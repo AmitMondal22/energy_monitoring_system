@@ -2,6 +2,7 @@ import paho.mqtt.client as mqtt
 from controllers.device_to_server import EnergyController
 from Library.DotDictLibrary import DotDictLibrary
 import json
+import asyncio
 
 class MqttLibraryClass:
     def __init__(self, broker_address, broker_port):
@@ -14,14 +15,12 @@ class MqttLibraryClass:
         self.subscriptions = []
 
     def on_connect(self, client, userdata, flags, rc):
-        print("Connected with result code "+str(rc))
         for topic, qos in self.subscriptions:
             client.subscribe(topic, qos=qos)
 
     def on_message(self, client, userdata, msg):
-        print("Message received on topic: "+msg.topic+" - QoS: "+str(msg.qos)+" - Message: "+str(msg.payload.decode()))
-        EnergyController.get_energy_data(DotDictLibrary(json.loads(msg.payload)))
-        
+        asyncio.run(EnergyController.get_energy_data(DotDictLibrary(json.loads(msg.payload))))
+    
 
     def connect(self):
         self.client.connect(self.broker_address, self.broker_port, 60)
