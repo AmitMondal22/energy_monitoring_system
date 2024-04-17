@@ -4,10 +4,9 @@ from datetime import date,datetime,time
 
 class EnergyDeviceData(BaseModel):
     client_id: int
-    device_id: str
+    device_id: int
     device: str
-    do_channel: str
-    device_type: str
+    do_channel: int
     device_location: str
     device_run_hours: float # number of hours the device has been running
     # device_run_hours: time # time
@@ -44,3 +43,21 @@ class WsEnergyData(BaseModel):
     client_id: int
     device_id: int
     device: str
+    
+    
+    
+# ==========================================
+# ==========================================
+
+
+
+class UpsDeviceData(BaseModel):
+    client_id: int
+    device_id: int
+    device: str
+    do_channel: int
+    device_location: str
+    device_output_current: float
+    device_input_current: float
+    
+    

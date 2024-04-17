@@ -1,5 +1,5 @@
 import paho.mqtt.client as mqtt
-from controllers.device_to_server import EnergyController
+from controllers.device_to_server import EnergyController,UpsController
 from Library.DotDictLibrary import DotDictLibrary
 import json
 import asyncio
@@ -19,7 +19,11 @@ class MqttLibraryClass:
             client.subscribe(topic, qos=qos)
 
     def on_message(self, client, userdata, msg):
-        asyncio.run(EnergyController.get_energy_data(DotDictLibrary(json.loads(msg.payload))))
+        reqdata=DotDictLibrary(json.loads(msg.payload))
+        if reqdata.device == "UPS":
+            asyncio.run(UpsController.get_ups_data(reqdata))
+        elif reqdata.device == "ENE":
+            asyncio.run(EnergyController.get_energy_data(reqdata))
     
 
     def connect(self):

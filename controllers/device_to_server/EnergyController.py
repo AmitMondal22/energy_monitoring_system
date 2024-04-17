@@ -12,16 +12,42 @@ async def get_energy_data(data):
         value = f"{data.client_id},{data.device_id}, '{data.device}', {data.do_channel}, {data.device_run_hours}, {data.device_dc_bus_voltage}, {data.device_output_current}, {data.device_settings_freq}, {data.device_running_freq}, {data.device_rpm}, {data.device_flow}, '{get_current_date()}', '{get_current_time()}', '{current_datetime}'"
         energy_data_id = insert_data("td_energy_data", columns, value)
         if energy_data_id is None:
-            raise ValueError("device registration failed")
+            raise ValueError("energy data was not inserted")
         else:
             from routes.api_client_routes import SendEnergySocket
-            lastdata=await SendEnergySocket.send_last_energy_data(data.client_id, data.device_id, data.device)
+            # lastdata=await SendEnergySocket.send_last_energy_data(data.client_id, data.device_id, data.device)
+            lastdata=await send_last_energy_data(data.client_id, data.device_id, data.device)
             if lastdata is None:
                 raise ValueError("Could not fetch data")
             user_data = {"energy_data_id":energy_data_id, "device_id": data.device_id, "device": data.device, "do_channel": data.do_channel}
         return user_data
     except Exception as e:
         raise ValueError("Could not fetch data")
+    
+    
+
+@staticmethod  
+async def send_last_energy_data(client_id, device_id, device):
+        try:
+            # Lazy import inside the function
+            from Library.WsConnectionManagerManyDeviceTypes import WsConnectionManagerManyDeviceTypes
+            manager = WsConnectionManagerManyDeviceTypes()
+            
+            select="energy_data_id, client_id, device_id, device, do_channel, device_run_hours, device_dc_bus_voltage, device_output_current, device_settings_freq, device_running_freq, device_rpm, device_flow, date, time, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at"
+            condition = f"device_id = '{device_id}' AND device ='{device}' AND client_id = '{client_id}'"
+            order_by="energy_data_id DESC"
+                
+            lastdata = select_one_data("td_energy_data", select, condition, order_by)
+           
+           
+            await manager.send_personal_message("ENE",client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
+            
+            print("lastdata last energy data>>>>>>>>>>/////////",json.dumps(lastdata, cls=DecimalEncoder))
+            return json.dumps(lastdata, cls=DecimalEncoder)
+        except Exception as e:
+            raise ValueError("Could not fetch data")
+    
+    
  
 # @staticmethod
 # async def send_last_energy_data(client_id, device_id, device):
