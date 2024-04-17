@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Apr 09, 2024 at 09:53 PM
+-- Generation Time: Apr 17, 2024 at 04:59 PM
 -- Server version: 8.0.36-0ubuntu0.22.04.1
 -- PHP Version: 8.1.2-1ubuntu2.14
 
@@ -29,18 +29,18 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `del_users` (
   `user_id` bigint NOT NULL,
-  `user_name` varchar(155) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `user_email` varchar(155) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `user_info_id` varchar(155) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `user_active_status` enum('Y','N') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `user_type` enum('S','A','C','U') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT 'S=super admin, a=admin, c=company, U=user',
+  `user_name` varchar(155) NOT NULL,
+  `user_email` varchar(155) NOT NULL,
+  `user_info_id` varchar(155) NOT NULL,
+  `user_active_status` enum('Y','N') NOT NULL,
+  `user_type` enum('S','A','C','U') NOT NULL COMMENT 'S=super admin, a=admin, c=company, U=user',
   `otp_number` int NOT NULL DEFAULT '0',
-  `otp_active_status` enum('N','Y') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `password` varchar(155) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `otp_active_status` enum('N','Y') NOT NULL,
+  `password` varchar(155) NOT NULL,
   `created_by` int NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 --
 -- Dumping data for table `del_users`
@@ -65,7 +65,7 @@ CREATE TABLE `md_assign_customer_device` (
   `updated_by` int DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 -- --------------------------------------------------------
 
@@ -83,7 +83,7 @@ CREATE TABLE `md_client` (
   `updated_by` int DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 --
 -- Dumping data for table `md_client`
@@ -104,12 +104,12 @@ CREATE TABLE `md_device` (
   `do_channel` int NOT NULL,
   `model` varchar(155) NOT NULL,
   `lat` varchar(50) NOT NULL,
-  `lon` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `imei_no` varchar(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `lon` varchar(50) NOT NULL,
+  `imei_no` varchar(80) NOT NULL,
   `last_maintenance` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 --
 -- Dumping data for table `md_device`
@@ -137,7 +137,7 @@ CREATE TABLE `md_manage_user_device` (
   `created_by` int NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 -- --------------------------------------------------------
 
@@ -152,7 +152,7 @@ CREATE TABLE `md_organization` (
   `created_by` int NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 --
 -- Dumping data for table `md_organization`
@@ -169,14 +169,14 @@ INSERT INTO `md_organization` (`organization_id`, `client_id`, `organization_nam
 
 CREATE TABLE `md_super_admin` (
   `super_admin_id` int NOT NULL,
-  `name` varchar(155) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `email` varchar(155) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `mobile_number` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '0',
-  `address` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `name` varchar(155) NOT NULL,
+  `email` varchar(155) NOT NULL,
+  `mobile_number` varchar(20) NOT NULL DEFAULT '0',
+  `address` text,
   `created_by` int NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 -- --------------------------------------------------------
 
@@ -186,7 +186,8 @@ CREATE TABLE `md_super_admin` (
 
 CREATE TABLE `td_energy_data` (
   `energy_data_id` bigint NOT NULL,
-  `device_id` bigint NOT NULL,
+  `client_id` int NOT NULL,
+  `device_id` int NOT NULL,
   `device` varchar(155) NOT NULL,
   `do_channel` int NOT NULL,
   `device_run_hours` int NOT NULL,
@@ -200,7 +201,105 @@ CREATE TABLE `td_energy_data` (
   `time` time DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
+
+--
+-- Dumping data for table `td_energy_data`
+--
+
+INSERT INTO `td_energy_data` (`energy_data_id`, `client_id`, `device_id`, `device`, `do_channel`, `device_run_hours`, `device_dc_bus_voltage`, `device_output_current`, `device_settings_freq`, `device_running_freq`, `device_rpm`, `device_flow`, `date`, `time`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, 'aa', 1, 0, '1500.21', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-10', '17:40:49', '2024-04-10 12:10:49', NULL),
+(91, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '14:42:30', '2024-04-15 09:12:30', NULL),
+(92, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '14:43:07', '2024-04-15 09:13:07', NULL),
+(93, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '14:43:08', '2024-04-15 09:13:08', NULL),
+(94, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '14:43:25', '2024-04-15 09:13:25', NULL),
+(95, 1, 1, 'aa', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '14:55:27', '2024-04-15 09:25:27', NULL),
+(96, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '15:04:03', '2024-04-15 09:34:03', NULL),
+(97, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '15:04:05', '2024-04-15 09:34:05', NULL),
+(98, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '15:04:05', '2024-04-15 09:34:05', NULL),
+(99, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '15:04:34', '2024-04-15 09:34:34', NULL),
+(100, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '15:04:40', '2024-04-15 09:34:40', NULL),
+(101, 1, 1, 'aa', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '15:04:45', '2024-04-15 09:34:45', NULL),
+(102, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '15:04:52', '2024-04-15 09:34:52', NULL),
+(103, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '15:04:53', '2024-04-15 09:34:53', NULL),
+(104, 1, 1, 'aa', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '15:58:00', '2024-04-15 10:28:00', NULL),
+(105, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '15:58:23', '2024-04-15 10:28:23', NULL),
+(106, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '16:02:08', '2024-04-15 10:32:08', NULL),
+(107, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '16:03:39', '2024-04-15 10:33:39', NULL),
+(108, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '16:03:40', '2024-04-15 10:33:40', NULL),
+(109, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '16:03:58', '2024-04-15 10:33:58', NULL),
+(110, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '16:03:59', '2024-04-15 10:33:59', NULL),
+(111, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '16:06:01', '2024-04-15 10:36:01', NULL),
+(112, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '16:12:14', '2024-04-15 10:42:14', NULL),
+(113, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '16:12:18', '2024-04-15 10:42:18', NULL),
+(114, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '16:13:37', '2024-04-15 10:43:37', NULL),
+(115, 1, 1, 'aa', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '16:15:04', '2024-04-15 10:45:04', NULL),
+(116, 1, 1, 'aa', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '16:16:33', '2024-04-15 10:46:33', NULL),
+(117, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '16:16:49', '2024-04-15 10:46:49', NULL),
+(118, 1, 1, 'aa', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:17:12', '2024-04-15 11:47:12', NULL),
+(119, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:17:18', '2024-04-15 11:47:18', NULL),
+(120, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:17:19', '2024-04-15 11:47:19', NULL),
+(121, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:17:20', '2024-04-15 11:47:20', NULL),
+(122, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:17:20', '2024-04-15 11:47:20', NULL),
+(123, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:17:21', '2024-04-15 11:47:21', NULL),
+(124, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:17:21', '2024-04-15 11:47:21', NULL),
+(125, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:17:21', '2024-04-15 11:47:21', NULL),
+(126, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:17:22', '2024-04-15 11:47:22', NULL),
+(127, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:17:22', '2024-04-15 11:47:22', NULL),
+(128, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:18:48', '2024-04-15 11:48:48', NULL),
+(129, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:18:49', '2024-04-15 11:48:49', NULL),
+(130, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:18:49', '2024-04-15 11:48:49', NULL),
+(131, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:18:50', '2024-04-15 11:48:50', NULL),
+(132, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:18:50', '2024-04-15 11:48:50', NULL),
+(133, 1, 1, 'aa', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:30:35', '2024-04-15 12:00:35', NULL),
+(134, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:30:40', '2024-04-15 12:00:40', NULL),
+(135, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:30:42', '2024-04-15 12:00:42', NULL),
+(136, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:30:44', '2024-04-15 12:00:44', NULL),
+(137, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:31:34', '2024-04-15 12:01:34', NULL),
+(138, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:31:50', '2024-04-15 12:01:50', NULL),
+(139, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:31:51', '2024-04-15 12:01:51', NULL),
+(140, 1, 1, 'aa', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:31:54', '2024-04-15 12:01:54', NULL),
+(141, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:31:58', '2024-04-15 12:01:58', NULL),
+(142, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:31:59', '2024-04-15 12:01:59', NULL),
+(143, 1, 1, '1', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:32:29', '2024-04-15 12:02:29', NULL),
+(144, 1, 1, 'aaa', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:32:43', '2024-04-15 12:02:43', NULL),
+(145, 1, 1, 'aaa', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:32:50', '2024-04-15 12:02:50', NULL),
+(146, 1, 1, 'aaa', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:32:52', '2024-04-15 12:02:52', NULL),
+(147, 1, 1, 'aaa', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:32:53', '2024-04-15 12:02:53', NULL),
+(148, 1, 1, 'aa', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:33:02', '2024-04-15 12:03:02', NULL),
+(149, 1, 1, 'aa', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:33:20', '2024-04-15 12:03:20', NULL),
+(150, 1, 1, 'aa', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:33:26', '2024-04-15 12:03:26', NULL),
+(151, 1, 1, 'aa', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:34:16', '2024-04-15 12:04:16', NULL),
+(152, 1, 1, 'aa', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:34:22', '2024-04-15 12:04:22', NULL),
+(153, 1, 1, 'aa', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:35:07', '2024-04-15 12:05:07', NULL),
+(154, 1, 1, 'aa', 1, 0, '0.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2024-04-15', '17:35:10', '2024-04-15 12:05:10', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `td_ups_data`
+--
+
+CREATE TABLE `td_ups_data` (
+  `ups_data_id` bigint NOT NULL,
+  `client_id` int NOT NULL,
+  `device_id` int NOT NULL,
+  `device` varchar(155) NOT NULL,
+  `do_channel` int NOT NULL,
+  `output_current` decimal(10,2) NOT NULL,
+  `input_current` decimal(10,2) NOT NULL,
+  `date` date DEFAULT NULL,
+  `time` time DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+);
+
+--
+-- Dumping data for table `td_ups_data`
+--
+
+INSERT INTO `td_ups_data` (`ups_data_id`, `client_id`, `device_id`, `device`, `do_channel`, `output_current`, `input_current`, `date`, `time`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, '1dfgbd', 1, '1.20', '50.45', '2024-04-17', '15:51:01', '2024-04-17 10:21:01', NULL);
 
 -- --------------------------------------------------------
 
@@ -210,18 +309,18 @@ CREATE TABLE `td_energy_data` (
 
 CREATE TABLE `users` (
   `user_id` bigint NOT NULL,
-  `user_name` varchar(155) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `user_email` varchar(155) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `user_name` varchar(155) NOT NULL,
+  `user_email` varchar(155) NOT NULL,
   `user_info_id` int NOT NULL,
-  `user_active_status` enum('Y','N') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `user_type` enum('S','A','C','O','U') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT 'S=super admin, a=admin, c=client,\r\nO=organization U=user',
+  `user_active_status` enum('Y','N') NOT NULL,
+  `user_type` enum('S','A','C','O','U') NOT NULL COMMENT 'S=super admin, a=admin, c=client,\r\nO=organization U=user',
   `otp_number` int NOT NULL DEFAULT '0',
-  `otp_active_status` enum('N','Y') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `password` varchar(155) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `otp_active_status` enum('N','Y') NOT NULL,
+  `password` varchar(155) NOT NULL,
   `created_by` int NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 --
 -- Dumping data for table `users`
@@ -287,6 +386,12 @@ ALTER TABLE `td_energy_data`
   ADD PRIMARY KEY (`energy_data_id`);
 
 --
+-- Indexes for table `td_ups_data`
+--
+ALTER TABLE `td_ups_data`
+  ADD PRIMARY KEY (`ups_data_id`);
+
+--
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
@@ -343,7 +448,13 @@ ALTER TABLE `md_super_admin`
 -- AUTO_INCREMENT for table `td_energy_data`
 --
 ALTER TABLE `td_energy_data`
-  MODIFY `energy_data_id` bigint NOT NULL AUTO_INCREMENT;
+  MODIFY `energy_data_id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=155;
+
+--
+-- AUTO_INCREMENT for table `td_ups_data`
+--
+ALTER TABLE `td_ups_data`
+  MODIFY `ups_data_id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `users`
