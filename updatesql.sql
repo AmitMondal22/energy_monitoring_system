@@ -1,1 +1,0 @@
-ALTER TABLE `td_energy_data` ADD `client_id` INT(11) NOT NULL AFTER `energy_data_id`; 
