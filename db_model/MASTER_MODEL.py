@@ -137,7 +137,7 @@ def batch_insert_data(table: str, columns: str, rows_data: list) -> Optional[int
         print(e)
         if 'conn' in locals():
             conn.rollback()  # Rollback the transaction if an error occurs
-        return None
+        return e
     finally:
         if 'cursor' in locals():
             cursor.close()

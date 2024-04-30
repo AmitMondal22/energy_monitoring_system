@@ -99,3 +99,26 @@ class AddAlert(BaseModel):
         if not re.match(pattern, alert_email):
             raise ValueError("Invalid email address")
         return alert_email
+
+
+class DeviceAdd(BaseModel):
+    client_id: int
+    device: str
+    device_name: str
+    do_channel: int
+    model: str
+    lat: str
+    lon: str
+    imei_no: str
+    last_maintenance: date
+
+class DeviceEdit(BaseModel):
+    device_id:int
+    client_id: int
+    device: str
+    device_name: str
+    do_channel: int
+    model: str
+    lat: str
+    lon: str
+    imei_no: str

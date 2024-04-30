@@ -10,8 +10,9 @@ from models.manage_user_model import AddUser, EditUser,DeleteUser,UserDeviceAdd,
 
 
 
-from models.device_data_model import EnergyData,AddAlert
+from models.device_data_model import EnergyData,AddAlert,DeviceAdd,DeviceEdit
 from Library.DecimalEncoder import DecimalEncoder
+from Library.CustomEncoder import CustomEncoder
 from db_model.MASTER_MODEL import select_one_data
 
 
@@ -323,7 +324,46 @@ async def list_device(params:ClientId):
         # For any other unexpected error, return a 500 Internal Server Error
         raise HTTPException(status_code=500, detail="Internal server error")
     
+
+
+@api_client_routes.post("/manage/devices/add")
+async def add_device(params:List[DeviceAdd]):
+    try:
+        data = await DeviceController.add_device(params)
+        resdata = successResponse(data, message="Device added successfully")
+        return Response(content=json.dumps(resdata), media_type="application/json", status_code=200)
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
     
+    
+@api_client_routes.post("/manage/devices/edit")
+async def edit_device(params:DeviceEdit):
+    try:
+        data = await DeviceController.edit_device(params)
+        resdata = successResponse(data, message="Device edited successfully")
+        return Response(content=json.dumps(resdata), media_type="application/json", status_code=200)
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+
+@api_client_routes.post("/manage/devices/list")
+async def list_device(params:ClientId):
+    # try:
+        data = await DeviceController.manage_list_device(params)
+        resdata = successResponse(data, message="List of devices")
+        return Response(content=json.dumps(resdata, cls=CustomEncoder), media_type="application/json", status_code=200)
+    # except ValueError as ve:
+    #     # If there's a ValueError, return a 400 Bad Request with the error message
+    #     raise HTTPException(status_code=400, detail=str(ve))
+    # except Exception as e:
+    #     # For any other unexpected error, return a 500 Internal Server Error
+    #     raise HTTPException(status_code=500, detail="Internal server error")
+
 # =================================================================================================
 # =================================================================================================
 @api_client_routes.post("/devices/energy_data")
@@ -339,6 +379,16 @@ async def energy_data(params:EnergyData):
         # For any other unexpected error, return a 500 Internal Server Error
         raise HTTPException(status_code=500, detail="Internal server error")
     
+# =================================================================================================
+# =================================================================================================
+
+
+
+
+
+
+
+
 
 
 # =================================================================================================
