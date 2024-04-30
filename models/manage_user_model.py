@@ -37,6 +37,7 @@ class UserDeviceAdd(BaseModel):
     organization_id: int
     user_id: int
     device_id: int
+    device: str
     created_by: int
     
     
@@ -45,6 +46,7 @@ class UserDeviceEdit(BaseModel):
     organization_id: int
     user_id: int
     device_id: int
+    device: str
     created_by: int
     manage_user_device_id: int
 

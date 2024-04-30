@@ -2,7 +2,12 @@ from db_model.MASTER_MODEL import select_data, insert_data,update_data,delete_da
 from utils.date_time_format import get_current_datetime,get_current_date,get_current_time
 
 from Library.DecimalEncoder import DecimalEncoder
+from Library import AlertLibrary
 import json
+from Library.MqttLibraryClass import MqttLibraryClass
+
+
+from hooks.update_event_hooks import update_topics
 
 @staticmethod
 async def get_energy_data(data):
@@ -11,10 +16,24 @@ async def get_energy_data(data):
         columns = "client_id, device_id, device, do_channel, device_run_hours, device_dc_bus_voltage, device_output_current, device_settings_freq, device_running_freq, device_rpm, device_flow, date, time, created_at"
         value = f"{data.client_id},{data.device_id}, '{data.device}', {data.do_channel}, {data.device_run_hours}, {data.device_dc_bus_voltage}, {data.device_output_current}, {data.device_settings_freq}, {data.device_running_freq}, {data.device_rpm}, {data.device_flow}, '{get_current_date()}', '{get_current_time()}', '{current_datetime}'"
         energy_data_id = insert_data("td_energy_data", columns, value)
+        
+        
+        
+        mqtt_client = MqttLibraryClass("techavoiot.co.in", 1883)
+        # Connect to the MQTT broker
+        mqtt_client.connect()
+        
+        data=await update_topics()
+        print("data",data)
+        mqtt_client.subscribe(data)
+        
+        
+        
+        
         if energy_data_id is None:
             raise ValueError("energy data was not inserted")
         else:
-            from routes.api_client_routes import SendEnergySocket
+            # from routes.api_client_routes import SendEnergySocket
             # lastdata=await SendEnergySocket.send_last_energy_data(data.client_id, data.device_id, data.device)
             lastdata=await send_last_energy_data(data.client_id, data.device_id, data.device)
             if lastdata is None:
@@ -39,8 +58,10 @@ async def send_last_energy_data(client_id, device_id, device):
                 
             lastdata = select_one_data("td_energy_data", select, condition, order_by)
            
-           
-            await manager.send_personal_message("ENE",client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
+            await AlertLibrary.send_alert(client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
+            
+            
+            await manager.send_personal_message("EMS",client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
             
             print("lastdata last energy data>>>>>>>>>>/////////",json.dumps(lastdata, cls=DecimalEncoder))
             return json.dumps(lastdata, cls=DecimalEncoder)

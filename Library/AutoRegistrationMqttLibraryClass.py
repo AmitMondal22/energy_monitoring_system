@@ -4,7 +4,7 @@ from Library.DotDictLibrary import DotDictLibrary
 import json
 import asyncio
 
-class MqttLibraryClass:
+class AutoRegistrationMqttLibraryClass:
     def __init__(self, broker_address, broker_port):
         self.client = mqtt.Client()
         self.broker_address = broker_address
@@ -20,9 +20,9 @@ class MqttLibraryClass:
 
     def on_message(self, client, userdata, msg):
         reqdata=DotDictLibrary(json.loads(msg.payload))
-        if reqdata.device == "UMS":
+        if reqdata.device == "UPS":
             asyncio.run(UpsController.get_ups_data(reqdata))
-        elif reqdata.device == "EMS":
+        elif reqdata.device == "ENE":
             asyncio.run(EnergyController.get_energy_data(reqdata))
     
 

@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field, constr, validator
 from datetime import date,datetime,time
+import re
 
 
 class EnergyDeviceData(BaseModel):
@@ -22,7 +23,10 @@ class EnergyDeviceData(BaseModel):
 
 
 class DeviceAutoRegister(BaseModel):
-    do_channel:str
+    # client_id: int
+    ib_id: int
+    # device_id: int
+    do_channel:int
     model:str
     lat:str
     lon:str
@@ -61,3 +65,37 @@ class UpsDeviceData(BaseModel):
     device_input_current: float
     
     
+    
+# ========================================
+
+class AddAlert(BaseModel):
+    client_id: int
+    organization_id: int
+    device_id: int
+    device: str
+    unit_id: int
+    alert_type: str
+    alert_status: str
+    alert_status: str
+    alert_value: float
+    alert_email : str
+    create_by: int
+    @validator('alert_type')
+    def validate_alert_type(cls, v):
+        valid_alert_types = {"H", "L", "CL", "CH"}
+        if v not in valid_alert_types:
+            raise ValueError('Invalid alert type')
+        return v
+    @validator('alert_status')
+    def validate_alert_status(cls, v):
+        valid_alert_status = {"Y", "N"}
+        if v not in valid_alert_status:
+            raise ValueError('Invalid alert status')
+        return v
+    @validator('alert_email')
+    def validate_email(cls, alert_email):
+        # Regular expression for basic email validation
+        pattern = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
+        if not re.match(pattern, alert_email):
+            raise ValueError("Invalid email address")
+        return alert_email

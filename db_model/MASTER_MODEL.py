@@ -125,6 +125,8 @@ def batch_insert_data(table: str, columns: str, rows_data: list) -> Optional[int
         values = [tuple(row.values()) for row in rows_data]
         flattened_values = [item for sublist in values for item in sublist]  # Flatten the list of tuples
         query = f"INSERT INTO {table} ({columns}) VALUES {placeholders}"
+        
+        print(query)
         cursor.execute(query, flattened_values)
         conn.commit()  # Commit the transaction
         # Get the IDs of the inserted rows
@@ -208,6 +210,9 @@ def update_data(table: str, set_values: dict, condition: str) -> bool:
 
         # Construct the UPDATE query
         query = f"UPDATE `{table}` SET {set_clause} WHERE {condition}"
+        
+        print(query)
+        print(set_values_list)
 
         # Execute the UPDATE query
         cursor.execute(query, set_values_list)

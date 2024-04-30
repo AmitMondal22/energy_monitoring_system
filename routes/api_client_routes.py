@@ -2,15 +2,26 @@ from fastapi import APIRouter, HTTPException, Response,WebSocket,WebSocketDiscon
 
 from controllers.admin import ClientController, ManageUserController, DeviceManageUserController,DeviceController
 
+from controllers.unit import UnitController
+from controllers.alert import AlertController
+
 from models.organization_model import AddOrganization, EditOrganization, DeleteOrganization,ListOrganization
 from models.manage_user_model import AddUser, EditUser,DeleteUser,UserDeviceAdd,UserDeviceEdit,UserDeviceDelete,ListUsers,UserInfo,ClientId
-from models.device_data_model import EnergyData
+
+
+
+from models.device_data_model import EnergyData,AddAlert
 from Library.DecimalEncoder import DecimalEncoder
 from db_model.MASTER_MODEL import select_one_data
 
 
+
+from Library import EmailLibrary
+
 from Library.WsConnectionManager import WsConnectionManager
 from utils.response import errorResponse, successResponse
+
+from typing import List
 import json
 
 api_client_routes = APIRouter()
@@ -273,7 +284,7 @@ async def list_user_device(params:ClientId):
 async def edit_user_device(user:UserDeviceEdit):
     try:
         data = DeviceManageUserController.edit_device(user)
-        resdata = successResponse(data, message="List of users")
+        resdata = successResponse(data, message="List of user devices")
         return Response(content=json.dumps(resdata), media_type="application/json", status_code=200)
     except ValueError as ve:
         # If there's a ValueError, return a 400 Bad Request with the error message
@@ -327,3 +338,34 @@ async def energy_data(params:EnergyData):
     except Exception as e:
         # For any other unexpected error, return a 500 Internal Server Error
         raise HTTPException(status_code=500, detail="Internal server error")
+    
+
+
+# =================================================================================================
+# =================================================================================================
+
+
+
+@api_client_routes.post("/unit/list")
+async def list_unit():
+    try:
+        data = await UnitController.list_unit()
+        resdata = successResponse(data, message="List of units")
+        return Response(content=json.dumps(resdata), media_type="application/json", status_code=200)
+    except ValueError as ve:
+        # If there's a ValueError, return a 400 Bad Request with the error message
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        # For any other unexpected error, return a 500 Internal Server Error
+        raise HTTPException(status_code=500, detail="Internal server error")
+    
+
+@api_client_routes.post("/alert/add")
+async def add_alert(alert:List[AddAlert]):
+    # try:
+        data = AlertController.add_alert(alert)
+        resdata = successResponse(data, message="Alert added successfully")
+        return Response(content=json.dumps(resdata), media_type="application/json", status_code=200)
+    # except ValueError as ve:
+    #     # If there's a ValueError, return a 400 Bad Request with the error message
+    #     raise HTTPException(status_code=400, detail=str(ve))

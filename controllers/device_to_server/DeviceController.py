@@ -2,7 +2,7 @@ from db_model.MASTER_MODEL import select_data, insert_data,update_data,delete_da
 from utils.date_time_format import get_current_datetime,get_current_date,get_current_time
 from utils.utils import increment_string
 
-
+from hooks.update_event_hooks import update_topics
 
    
 @staticmethod
@@ -23,8 +23,12 @@ async def device_auto_register(data):
             # u_id = "C1TS00000001"
             u_id = "IB00000001"
         current_datetime = get_current_datetime()
-        columns = "device, do_channel, model, lat, lon, imei_no, created_at"
-        value = f"'{u_id}', '{data.do_channel}', '{data.model}', '{data.lat}', '{data.lon}', '{data.imei_no}', '{current_datetime}'"
+        columns = "client_id, device, do_channel, model, lat, lon, imei_no, created_at"
+        value = f"{data.ib_id},'{u_id}', '{data.do_channel}', '{data.model}', '{data.lat}', '{data.lon}', '{data.imei_no}', '{current_datetime}'"
+        
+        
+
+        await update_topics()
         device_id = insert_data("md_device", columns, value)
         if device_id is None:
             raise ValueError("device registration failed")
