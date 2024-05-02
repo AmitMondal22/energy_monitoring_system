@@ -64,6 +64,10 @@ class UserInfo(BaseModel):
     
 class ClientId(BaseModel):
     client_id: int
+    
+class DeviceInfo(BaseModel):
+    client_id: int
+    device_id: int
 
 class UserDeviceList(BaseModel):
     client_id: int

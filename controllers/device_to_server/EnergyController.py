@@ -13,19 +13,19 @@ from hooks.update_event_hooks import update_topics
 async def get_energy_data(data):
     try:
         current_datetime = get_current_datetime()
-        columns = "client_id, device_id, device, do_channel, device_run_hours, device_dc_bus_voltage, device_output_current, device_settings_freq, device_running_freq, device_rpm, device_flow, date, time, created_at"
-        value = f"{data.client_id},{data.device_id}, '{data.device}', {data.do_channel}, {data.device_run_hours}, {data.device_dc_bus_voltage}, {data.device_output_current}, {data.device_settings_freq}, {data.device_running_freq}, {data.device_rpm}, {data.device_flow}, '{get_current_date()}', '{get_current_time()}', '{current_datetime}'"
+        columns = "client_id, device_id, device, do_channel, device_run_hours, device_dc_bus_voltage,device_dc_bus_voltage2,device_dc_bus_voltage3, device_output_current,device_output_current2,device_output_current3, device_settings_freq, device_running_freq, device_rpm, device_flow, date, time, created_at"
+        value = f"{data.client_id},{data.device_id}, '{data.device}', {data.do_channel}, {data.device_run_hours},{data.device_dc_bus_voltage},{data.device_dc_bus_voltage_2},{data.device_dc_bus_voltage_3}, {data.device_output_current},{data.device_output_current_2},{data.device_output_current_3}, {data.device_settings_freq}, {data.device_running_freq}, {data.device_rpm}, {data.device_flow}, '{get_current_date()}', '{get_current_time()}', '{current_datetime}'"
         energy_data_id = insert_data("td_energy_data", columns, value)
         
         
         
-        mqtt_client = MqttLibraryClass("techavoiot.co.in", 1883)
-        # Connect to the MQTT broker
-        mqtt_client.connect()
+        # mqtt_client = MqttLibraryClass("techavoiot.co.in", 1883)
+        # # Connect to the MQTT broker
+        # mqtt_client.connect()
         
-        data=await update_topics()
-        print("data",data)
-        mqtt_client.subscribe(data)
+        # data=await update_topics()
+        # print("data",data)
+        # mqtt_client.subscribe(data)
         
         
         
@@ -52,7 +52,7 @@ async def send_last_energy_data(client_id, device_id, device):
             from Library.WsConnectionManagerManyDeviceTypes import WsConnectionManagerManyDeviceTypes
             manager = WsConnectionManagerManyDeviceTypes()
             
-            select="energy_data_id, client_id, device_id, device, do_channel, device_run_hours, device_dc_bus_voltage, device_output_current, device_settings_freq, device_running_freq, device_rpm, device_flow, date, time, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at"
+            select="energy_data_id, client_id, device_id, device, do_channel, device_run_hours, device_dc_bus_voltage,device_dc_bus_voltage2,device_dc_bus_voltage3, device_output_current,device_output_current2,device_output_current3, device_settings_freq, device_running_freq, device_rpm, device_flow, date, time, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at"
             condition = f"device_id = '{device_id}' AND device ='{device}' AND client_id = '{client_id}'"
             order_by="energy_data_id DESC"
                 

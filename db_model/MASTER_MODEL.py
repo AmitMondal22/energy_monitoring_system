@@ -156,9 +156,12 @@ def delete_data(table: str, condition: str) -> bool:
         cursor = conn.cursor()
         conn.start_transaction()
         query = f"DELETE FROM {table}  WHERE {condition}"
+        print(query)
         cursor.execute(query)
+        row_count = cursor.rowcount
         conn.commit()  # Commit the transaction
-        return True  # Indicate successful deletion
+        # return True  # Indicate successful deletion
+        return row_count
     except Exception as e:
         print(e)
         if 'conn' in locals():

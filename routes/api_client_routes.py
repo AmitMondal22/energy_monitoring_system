@@ -6,11 +6,11 @@ from controllers.unit import UnitController
 from controllers.alert import AlertController
 
 from models.organization_model import AddOrganization, EditOrganization, DeleteOrganization,ListOrganization
-from models.manage_user_model import AddUser, EditUser,DeleteUser,UserDeviceAdd,UserDeviceEdit,UserDeviceDelete,ListUsers,UserInfo,ClientId
+from models.manage_user_model import AddUser, EditUser,DeleteUser,UserDeviceAdd,UserDeviceEdit,UserDeviceDelete,ListUsers,UserInfo,ClientId,DeviceInfo
 
 
 
-from models.device_data_model import EnergyData,AddAlert,DeviceAdd,DeviceEdit
+from models.device_data_model import EnergyData,AddAlert,DeviceAdd,DeviceEdit,EditAlert,DeleteAlert
 from Library.DecimalEncoder import DecimalEncoder
 from Library.CustomEncoder import CustomEncoder
 from db_model.MASTER_MODEL import select_one_data
@@ -95,7 +95,7 @@ class SendEnergySocket:
             # from Library import WsConnectionManager
             # manager = WsConnectionManager.WsConnectionManager()
             
-            select="energy_data_id, client_id, device_id, device, do_channel, device_run_hours, device_dc_bus_voltage, device_output_current, device_settings_freq, device_running_freq, device_rpm, device_flow, date, time, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at"
+            select="energy_data_id, client_id, device_id, device, do_channel, device_run_hours, device_dc_bus_voltage,device_dc_bus_voltage2,device_dc_bus_voltage3, device_output_current,device_output_current2,device_output_current3, device_settings_freq, device_running_freq, device_rpm, device_flow, date, time, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at"
             condition = f"device_id = '{device_id}' AND device ='{device}' AND client_id = '{client_id}'"
             order_by="energy_data_id DESC"
                 
@@ -324,6 +324,21 @@ async def list_device(params:ClientId):
         # For any other unexpected error, return a 500 Internal Server Error
         raise HTTPException(status_code=500, detail="Internal server error")
     
+    
+    
+@api_client_routes.post("/devices/device_info")
+async def list_device(params:DeviceInfo):
+    try:
+        data = await DeviceController.device_info(params)
+        resdata = successResponse(data, message="List of devices")
+        return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
+    except ValueError as ve:
+        # If there's a ValueError, return a 400 Bad Request with the error message
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        # For any other unexpected error, return a 500 Internal Server Error
+        raise HTTPException(status_code=500, detail="Internal server error")
+    
 
 
 @api_client_routes.post("/manage/devices/add")
@@ -412,10 +427,56 @@ async def list_unit():
 
 @api_client_routes.post("/alert/add")
 async def add_alert(alert:List[AddAlert]):
-    # try:
+    try:
         data = AlertController.add_alert(alert)
         resdata = successResponse(data, message="Alert added successfully")
         return Response(content=json.dumps(resdata), media_type="application/json", status_code=200)
-    # except ValueError as ve:
-    #     # If there's a ValueError, return a 400 Bad Request with the error message
-    #     raise HTTPException(status_code=400, detail=str(ve))
+    except ValueError as ve:
+        # If there's a ValueError, return a 400 Bad Request with the error message
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        # For any other unexpected error, return a 500 Internal Server Error
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@api_client_routes.post("/alert/list")
+async def list_alert(params:ClientId):
+    try:
+        data = await AlertController.list_alert(params)
+        resdata = successResponse(data, message="List of alerts")
+        return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
+    except ValueError as ve:
+        # If there's a ValueError, return a 400 Bad Request with the error message
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        # For any other unexpected error, return a 500 Internal Server Error
+        raise HTTPException(status_code=500, detail="Internal server error")
+    
+@api_client_routes.post("/alert/edit")
+async def edit_alert(params:EditAlert):
+    try:
+        data = await AlertController.edit_alert(params)
+        resdata = successResponse(data, message="Alert edited successfully")
+        return Response(content=json.dumps(resdata), media_type="application/json", status_code=200)
+    except ValueError as ve:
+        # If there's a ValueError, return a 400 Bad Request with the error message
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        # For any other unexpected error, return a 500 Internal Server Error
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@api_client_routes.post("/alert/delete")
+async def delete_alert(params:DeleteAlert):
+    try:
+        data = await AlertController.delete_alert(params)
+        if data > 0:
+            resdata = successResponse(data, message="Alert deleted successfully")
+            return Response(content=json.dumps(resdata), media_type="application/json", status_code=200)
+        else:
+            resdata = errorResponse(message="Alert not deleted successfully")
+            return Response(content=json.dumps(resdata), media_type="application/json", status_code=404)
+    except ValueError as ve:
+        # If there's a ValueError, return a 400 Bad Request with the error message
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        # For any other unexpected error, return a 500 Internal Server Error
+        raise HTTPException(status_code=500, detail="Internal server error")

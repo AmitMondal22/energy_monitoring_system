@@ -26,12 +26,20 @@ mqtt_client.connect()
  
 @mqtt_routes.on_event("startup")
 async def startup_event():
-    data=await update_topics()
-    print("data",data)
-    mqtt_client.subscribe(data)
+    await subscribe_topics()
 
+# =========================================================
+# MQTT TOPIC
+@staticmethod
+async def subscribe_topics():
+    try:
+        data = await update_topics()
+        print("data",data)
+        mqtt_client.subscribe(data)
+    except Exception as e:
+        print(e)
         
-
+# =========================================================
 @mqtt_routes.post("/publish/")
 async def publish_message(message_data: MqttEnergyDeviceData):
     try:

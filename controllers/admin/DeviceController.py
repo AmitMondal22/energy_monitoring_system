@@ -11,6 +11,17 @@ async def list_device(params):
     except Exception as e:
         raise e
 
+
+@staticmethod
+async def device_info(params):
+    try:
+        condition = f"client_id={params.client_id} AND device_id = {params.device_id}"
+        select="device_id, client_id, device, device_name, do_channel, model, lat, lon, imei_no, last_maintenance, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at, DATE_FORMAT(updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at"
+        data = select_one_data("md_device",select, condition,order_by="device_id DESC")
+        return data
+    except Exception as e:
+        raise e
+
 @staticmethod
 async def add_device(params):
     try:
@@ -56,7 +67,7 @@ async def manage_list_device(params):
     try:
         condition = f"a.client_id = {params.client_id}"
         
-        select="a.device_id, a.client_id, a.device, a.device_name, a.do_channel, a.model, a.lat, a.lon, a.imei_no, a.last_maintenance, DATE_FORMAT(a.created_at, '%Y-%m-%d') AS device_created_at,DATE_FORMAT(a.updated_at, '%Y-%m-%d %H:%i:%s') AS device_updated_at, b.energy_data_id, b.device_id AS b_device_id, b.do_channel AS b_do_channel, b.device_run_hours, b.device_dc_bus_voltage, b.device_output_current, b.device_settings_freq, b.device_running_freq, b.device_rpm, b.device_flow, DATE_FORMAT(b.date, '%Y-%m-%d') AS date, TIME_FORMAT(b.time, '%H:%i:%s') AS time, DATE_FORMAT(b.created_at, '%Y-%m-%d %H:%i:%s') AS energy_data_created_at, DATE_FORMAT(b.updated_at, '%Y-%m-%d %H:%i:%s') AS energy_data_updated_at "
+        select="a.device_id, a.client_id, a.device, a.device_name, a.do_channel, a.model, a.lat, a.lon, a.imei_no, a.last_maintenance, DATE_FORMAT(a.created_at, '%Y-%m-%d') AS device_created_at,DATE_FORMAT(a.updated_at, '%Y-%m-%d %H:%i:%s') AS device_updated_at, b.energy_data_id, b.device_id AS b_device_id, b.do_channel AS b_do_channel, b.device_run_hours, b.device_dc_bus_voltage,b.device_dc_bus_voltage2,b.device_dc_bus_voltage3,b.device_output_current,b.device_output_current2,b.device_output_current3,  b.device_settings_freq, b.device_running_freq, b.device_rpm, b.device_flow, DATE_FORMAT(b.date, '%Y-%m-%d') AS date, TIME_FORMAT(b.time, '%H:%i:%s') AS time, DATE_FORMAT(b.created_at, '%Y-%m-%d %H:%i:%s') AS energy_data_created_at, DATE_FORMAT(b.updated_at, '%Y-%m-%d %H:%i:%s') AS energy_data_updated_at "
         
         table="md_device a LEFT JOIN (SELECT * FROM td_energy_data ORDER BY date DESC, time DESC) b ON a.device_id = b.device_id AND a.client_id = b.client_id"
         

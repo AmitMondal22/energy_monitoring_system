@@ -53,7 +53,7 @@ def delete_organization(organization):
 def energy_data(energy_data):
     try:
         table="td_energy_data AS ed"
-        select="ed.energy_data_id, ed.device_id, ed.device, ed.do_channel, ed.device_run_hours, ed.device_dc_bus_voltage, ed.device_output_current, ed.device_settings_freq, ed.device_running_freq, ed.device_rpm, ed.device_flow, ed.date, ed.time , DATE_FORMAT(ed.created_at, '%Y-%m-%d %H:%i:%s') AS created_at"
+        select="ed.energy_data_id, ed.device_id, ed.device, ed.do_channel, ed.device_run_hours, ed.device_dc_bus_voltage,ed.device_dc_bus_voltage2,ed.device_dc_bus_voltage3,ed.device_output_current,ed.device_output_current2,ed.device_output_current3, ed.device_settings_freq, ed.device_running_freq, ed.device_rpm, ed.device_flow, ed.date, ed.time , DATE_FORMAT(ed.created_at, '%Y-%m-%d %H:%i:%s') AS created_at"
         condition = f"ed.device_id = {energy_data.device_id} AND ed.device = '{energy_data.device}' AND ed.date BETWEEN '{energy_data.start_date}' AND '{energy_data.end_date}'"
         order_by="ed.date DESC, ed.time DESC"
         data=select_data(table, select,condition,order_by)

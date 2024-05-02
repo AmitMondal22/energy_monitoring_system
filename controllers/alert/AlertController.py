@@ -1,4 +1,4 @@
-from db_model.MASTER_MODEL import select_data, insert_data,batch_insert_data
+from db_model.MASTER_MODEL import select_data, insert_data,batch_insert_data,update_data,delete_data
 from utils.date_time_format import get_current_datetime
 
 def add_alert(data):
@@ -37,5 +37,40 @@ def add_alert(data):
         batch_dataid=batch_insert_data("td_alert", column, rows_data)
         print("batch_dataid---------------------", batch_dataid)
         return batch_dataid
+    except Exception as e:
+        raise e
+
+
+@staticmethod
+async def edit_alert(params):
+    try:
+        condition = f"alert_id = {params.alert_id} AND client_id = {params.client_id}"
+        columns={"device_id":params.device_id, "device":params.device, "unit_id":params.unit_id, "alert_type":params.alert_type, "alert_status":params.alert_status, "alert_value":params.alert_value, "alert_email":params.alert_email, "create_by":params.create_by, "updated_at":get_current_datetime()}
+        data = update_data("td_alert", columns, condition)
+        print(data)
+        return data
+    except Exception as e:
+        raise e
+
+@staticmethod
+async def list_alert(params):
+    try:
+        select="a.alert_id, a.client_id, a.organization_id, a.device_id, a.device, a.unit_id, a.alert_type, a.alert_status, a.alert_value, a.alert_email, a.create_by, a.created_at, b.unit"
+        table = "td_alert AS a, md_unit AS b"
+        condition = f"a.unit_id=b.unit_id AND a.client_id={params.client_id}"
+        order_by="a.device_id ASC"
+        data = select_data(table, select,condition,order_by)
+        return data
+    except Exception as e:
+        raise e
+
+
+@staticmethod
+async def delete_alert(params):
+    try:
+        condition = f"alert_id = {params.alert_id} AND client_id = {params.client_id} AND organization_id = {params.organization_id} AND device_id = {params.device_id}"
+        data = delete_data("td_alert", condition)
+        print("?????????????????????????????????",data)
+        return data
     except Exception as e:
         raise e
