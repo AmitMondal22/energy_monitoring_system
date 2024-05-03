@@ -430,7 +430,8 @@ async def add_alert(alert:List[AddAlert]):
     try:
         data = AlertController.add_alert(alert)
         resdata = successResponse(data, message="Alert added successfully")
-        return Response(content=json.dumps(resdata), media_type="application/json", status_code=200)
+        print(">>>>>>>>>>>>>>>>>>>>>",resdata)
+        return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
     except ValueError as ve:
         # If there's a ValueError, return a 400 Bad Request with the error message
         raise HTTPException(status_code=400, detail=str(ve))
