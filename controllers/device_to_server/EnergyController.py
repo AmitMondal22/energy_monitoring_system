@@ -46,24 +46,25 @@ async def get_energy_data(data):
     
 
 @staticmethod  
-async def send_last_energy_data(client_id, device_id, device, background_tasks: BackgroundTasks):
+async def send_last_energy_data(client_id, device_id, device):
         try:
             # Lazy import inside the function
             from Library.WsConnectionManagerManyDeviceTypes import WsConnectionManagerManyDeviceTypes
             manager = WsConnectionManagerManyDeviceTypes()
-            
+            background_tasks = BackgroundTasks()
             select="energy_data_id, client_id, device_id, device, do_channel, device_run_hours, device_dc_bus_voltage,device_dc_bus_voltage2,device_dc_bus_voltage3, device_output_current,device_output_current2,device_output_current3, device_settings_freq, device_running_freq, device_rpm, device_flow, date, time, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at"
             condition = f"device_id = '{device_id}' AND device ='{device}' AND client_id = '{client_id}'"
             order_by="energy_data_id DESC"
                 
             lastdata = select_one_data("td_energy_data", select, condition, order_by)
            
-           
+            print("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT")
             # AlertLibrary.send_alert(client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
-            #background_tasks.add_task(AlertLibrary.send_alert(client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder)))
+            # background_tasks.add_task(AlertLibrary.send_alert(client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder)))
             
             
             background_tasks.add_task(AlertLibrary.send_alert, client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
+            # background_tasks.add_task(AlertLibrary.send_alert, client_id, device_id, device, lastdata)
             
             
             await manager.send_personal_message("EMS",client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
