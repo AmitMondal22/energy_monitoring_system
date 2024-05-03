@@ -1,6 +1,6 @@
 from db_model.MASTER_MODEL import select_data, insert_data,update_data,delete_data,select_one_data
 from utils.date_time_format import get_current_datetime,get_current_date,get_current_time
-
+from fastapi import BackgroundTasks
 from Library.DecimalEncoder import DecimalEncoder
 from Library import AlertLibrary
 import json
@@ -46,7 +46,7 @@ async def get_energy_data(data):
     
 
 @staticmethod  
-async def send_last_energy_data(client_id, device_id, device):
+async def send_last_energy_data(client_id, device_id, device, background_tasks: BackgroundTasks):
         try:
             # Lazy import inside the function
             from Library.WsConnectionManagerManyDeviceTypes import WsConnectionManagerManyDeviceTypes
@@ -58,7 +58,12 @@ async def send_last_energy_data(client_id, device_id, device):
                 
             lastdata = select_one_data("td_energy_data", select, condition, order_by)
            
-            await AlertLibrary.send_alert(client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
+           
+            # AlertLibrary.send_alert(client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
+            #background_tasks.add_task(AlertLibrary.send_alert(client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder)))
+            
+            
+            background_tasks.add_task(AlertLibrary.send_alert, client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
             
             
             await manager.send_personal_message("EMS",client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))

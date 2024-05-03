@@ -55,7 +55,7 @@ async def edit_alert(params):
 @staticmethod
 async def list_alert(params):
     try:
-        select="a.alert_id, a.client_id, a.organization_id, a.device_id, a.device, a.unit_id, a.alert_type, a.alert_status, a.alert_value, a.alert_email, a.create_by, a.created_at, b.unit"
+        select="a.alert_id, a.client_id, a.organization_id, a.device_id, a.device, a.unit_id, a.alert_type, a.alert_status, a.alert_value, a.alert_email, a.create_by, a.created_at, b.unit,b.unit_name"
         table = "td_alert AS a, md_unit AS b"
         condition = f"a.unit_id=b.unit_id AND a.client_id={params.client_id}"
         order_by="a.device_id ASC"

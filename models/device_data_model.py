@@ -86,7 +86,7 @@ class AddAlert(BaseModel):
     create_by: int
     @validator('alert_type')
     def validate_alert_type(cls, v):
-        valid_alert_types = {"H", "L", "CL", "CH"}
+        valid_alert_types = {"3H", "2L", "1CL", "4CH"}
         if v not in valid_alert_types:
             raise ValueError('Invalid alert type')
         return v
@@ -119,7 +119,7 @@ class EditAlert(BaseModel):
     create_by: int
     @validator('alert_type')
     def validate_alert_type(cls, v):
-        valid_alert_types = {"H", "L", "CL", "CH"}
+        valid_alert_types = {"3H", "2L", "1CL", "4CH"}
         if v not in valid_alert_types:
             raise ValueError('Invalid alert type')
         return v
