@@ -368,16 +368,16 @@ async def edit_device(params:DeviceEdit):
 
 @api_client_routes.post("/manage/devices/list")
 async def list_device(params:ClientId):
-    # try:
+    try:
         data = await DeviceController.manage_list_device(params)
         resdata = successResponse(data, message="List of devices")
-        return Response(content=json.dumps(resdata, cls=CustomEncoder), media_type="application/json", status_code=200)
-    # except ValueError as ve:
-    #     # If there's a ValueError, return a 400 Bad Request with the error message
-    #     raise HTTPException(status_code=400, detail=str(ve))
-    # except Exception as e:
-    #     # For any other unexpected error, return a 500 Internal Server Error
-    #     raise HTTPException(status_code=500, detail="Internal server error")
+        return Response(content=json.dumps(resdata, cls=DecimalEncoder), media_type="application/json", status_code=200)
+    except ValueError as ve:
+        # If there's a ValueError, return a 400 Bad Request with the error message
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        # For any other unexpected error, return a 500 Internal Server Error
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 # =================================================================================================
 # =================================================================================================
