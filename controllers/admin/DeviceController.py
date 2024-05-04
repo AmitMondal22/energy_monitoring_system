@@ -124,3 +124,17 @@ async def current_data(params):
         return data
     except Exception as e:
         raise e
+    
+    
+@staticmethod
+async def power_data(params):
+    try:
+        end_date_time=params.end_date_time
+        start_date_time=params.start_date_time
+        
+        condition = f"client_id = {params.client_id} AND device_id = {params.device_id} AND created_at BETWEEN '{start_date_time.strftime('%Y-%m-%d %H:%M:%S')}' AND '{end_date_time.strftime('%Y-%m-%d %H:%M:%S')}'"
+        select="energy_data_id, device_id, do_channel, activep1, activep2, activep3, apparentp1, apparentp2, apparentp3, pf1, pf2, pf3, DATE_FORMAT(date, '%Y-%m-%d') AS date, TIME_FORMAT(time, '%H:%i:%s') AS time, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at, DATE_FORMAT(updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at"
+        data = select_data("td_energy_data",select, condition,order_by="energy_data_id DESC")
+        return data
+    except Exception as e:
+        raise e
