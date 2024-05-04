@@ -394,6 +394,21 @@ async def energy_data(params:EnergyData):
         # For any other unexpected error, return a 500 Internal Server Error
         raise HTTPException(status_code=500, detail="Internal server error")
     
+    
+    
+    
+    
+@api_client_routes.post("/devices/graphical_view/energy_used")
+async def energy_used(params:EnergyData):
+    try:
+        data = DeviceController.energy_used(params)
+        resdata = successResponse(data, message="devices Data")
+        return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
+    
 # =================================================================================================
 # =================================================================================================
 

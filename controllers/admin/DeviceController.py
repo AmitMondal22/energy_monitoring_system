@@ -77,3 +77,15 @@ async def manage_list_device(params):
         return data
     except Exception as e:
         raise e
+    
+    
+# =========================================================
+@staticmethod
+async def energy_used(params):
+    try:
+        condition = f"client_id = {params.client_id} AND device_id = {params.device_id} AND date BETWEEN '{params.start_date}' AND '{params.end_date}'"
+        select="energy_data_id, device_id, do_channel, e1, e2, e3, r, y, b, r_y, y_b, b_y, curr1, curr2, curr3, activep1, activep2, activep3, apparentp1, apparentp2, apparentp3, pf1, pf2, pf3, freq, reactvp1, reactvp2, reactvp3, avaragevln, avaragevll, avaragecurrent, totkw, totkva, totkvar, runhr, DATE_FORMAT(date, '%Y-%m-%d') AS date, TIME_FORMAT(time, '%H:%i:%s') AS time, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at, DATE_FORMAT(updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at"
+        data = select_one_data("td_energy_data",select, condition,order_by="energy_data_id DESC")
+        return data
+    except Exception as e:
+        raise e
