@@ -1,14 +1,13 @@
 from db_model.MASTER_MODEL import select_data, insert_data,update_data,delete_data,delete_insert_restore,select_one_data,batch_insert_data
 from utils.date_time_format import get_current_datetime, get_current_date_time_utc
 
-from Library.DateTimeLibrary import datetime_from_timestamp
 
 @staticmethod
 async def list_device(params):
     try:
         select="device_id, device"
         # select="device_id, device, do_channel, model, lat, lon, imei_no, last_maintenance, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at, DATE_FORMAT(updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at"
-        data = select_data("mdget_current_date_time_utc_device", select)
+        data = select_data("md_device", select)
         return data
     except Exception as e:
         raise e

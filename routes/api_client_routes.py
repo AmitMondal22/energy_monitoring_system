@@ -316,7 +316,7 @@ async def list_device(params:ClientId):
     try:
         data = await DeviceController.list_device(params)
         resdata = successResponse(data, message="List of devices")
-        return Response(content=json.dumps(resdata), media_type="application/json", status_code=200)
+        return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
     except ValueError as ve:
         # If there's a ValueError, return a 400 Bad Request with the error message
         raise HTTPException(status_code=400, detail=str(ve))
@@ -400,14 +400,14 @@ async def energy_data(params:EnergyData):
     
 @api_client_routes.post("/devices/graphical_view/energy_used")
 async def energy_used(params:EnergyUsed):
-    # try:
+    try:
         data = await DeviceController.energy_used(params)
         resdata = successResponse(data, message="devices Data")
         return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
-    # except ValueError as ve:
-    #     raise HTTPException(status_code=400, detail=str(ve))
-    # except Exception as e:
-    #     raise HTTPException(status_code=500, detail="Internal server error")
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
     
 # =================================================================================================
 # =================================================================================================
