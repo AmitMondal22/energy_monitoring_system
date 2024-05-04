@@ -67,7 +67,7 @@ async def send_last_energy_data(client_id, device_id, device):
             # background_tasks.add_task(AlertLibrary.send_alert, client_id, device_id, device, lastdata)
             
             
-            await manager.send_personal_message("EMS",client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
+            await manager.send_personal_message("EMS",client_id, device_id, device, "hello")
             
             print("lastdata last energy data>>>>>>>>>>/////////",json.dumps(lastdata, cls=DecimalEncoder))
             return json.dumps(lastdata, cls=DecimalEncoder)
