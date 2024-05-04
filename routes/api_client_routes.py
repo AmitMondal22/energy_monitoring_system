@@ -10,7 +10,7 @@ from models.manage_user_model import AddUser, EditUser,DeleteUser,UserDeviceAdd,
 
 
 
-from models.device_data_model import EnergyData,AddAlert,DeviceAdd,DeviceEdit,EditAlert,DeleteAlert
+from models.device_data_model import EnergyData,AddAlert,DeviceAdd,DeviceEdit,EditAlert,DeleteAlert,EnergyUsed
 from Library.DecimalEncoder import DecimalEncoder
 from Library.CustomEncoder import CustomEncoder
 from db_model.MASTER_MODEL import select_one_data
@@ -399,15 +399,15 @@ async def energy_data(params:EnergyData):
     
     
 @api_client_routes.post("/devices/graphical_view/energy_used")
-async def energy_used(params:EnergyData):
-    try:
+async def energy_used(params:EnergyUsed):
+    # try:
         data = await DeviceController.energy_used(params)
         resdata = successResponse(data, message="devices Data")
         return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
-    except ValueError as ve:
-        raise HTTPException(status_code=400, detail=str(ve))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Internal server error")
+    # except ValueError as ve:
+    #     raise HTTPException(status_code=400, detail=str(ve))
+    # except Exception as e:
+    #     raise HTTPException(status_code=500, detail="Internal server error")
     
 # =================================================================================================
 # =================================================================================================

@@ -87,6 +87,17 @@ class EnergyData(BaseModel):
     start_date: date
     end_date: date
     
+    
+class EnergyUsed(BaseModel):
+    client_id: int
+    device_id: int
+    device: str
+    # start_date: date
+    # end_date: date
+    # start_date_time: datetime = Field(..., alias="start_date_time", description="Format: '%Y-%m-%d %H:%M:%S'")
+    start_date_time: datetime
+    # end_date_time: datetime
+    
 class WsEnergyData(BaseModel):
     client_id: int
     device_id: int
