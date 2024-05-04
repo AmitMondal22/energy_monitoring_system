@@ -47,7 +47,7 @@ async def get_energy_data(data):
 
 @staticmethod  
 async def send_last_energy_data(client_id, device_id, device):
-        try:
+        # try:
             # Lazy import inside the function
             from Library.WsConnectionManagerManyDeviceTypes import WsConnectionManagerManyDeviceTypes
             manager = WsConnectionManagerManyDeviceTypes()
@@ -71,8 +71,8 @@ async def send_last_energy_data(client_id, device_id, device):
             
             print("lastdata last energy data>>>>>>>>>>/////////",json.dumps(lastdata, cls=DecimalEncoder))
             return json.dumps(lastdata, cls=DecimalEncoder)
-        except Exception as e:
-            raise ValueError("Could not fetch data")
+        # except Exception as e:
+        #     raise ValueError("Could not fetch data")
     
     
  
