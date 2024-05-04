@@ -401,7 +401,7 @@ async def energy_data(params:EnergyData):
 @api_client_routes.post("/devices/graphical_view/energy_used")
 async def energy_used(params:EnergyData):
     try:
-        data = DeviceController.energy_used(params)
+        data = await DeviceController.energy_used(params)
         resdata = successResponse(data, message="devices Data")
         return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
     except ValueError as ve:
