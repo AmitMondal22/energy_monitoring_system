@@ -10,7 +10,7 @@ from models.manage_user_model import AddUser, EditUser,DeleteUser,UserDeviceAdd,
 
 
 
-from models.device_data_model import EnergyData,AddAlert,DeviceAdd,DeviceEdit,EditAlert,DeleteAlert,EnergyUsed
+from models.device_data_model import EnergyData,AddAlert,DeviceAdd,DeviceEdit,EditAlert,DeleteAlert,EnergyUsed, VoltageData
 from Library.DecimalEncoder import DecimalEncoder
 from Library.CustomEncoder import CustomEncoder
 from db_model.MASTER_MODEL import select_one_data
@@ -402,13 +402,37 @@ async def energy_data(params:EnergyData):
 async def energy_used(params:EnergyUsed):
     try:
         data = await DeviceController.energy_used(params)
-        resdata = successResponse(data, message="devices Data")
+        resdata = successResponse(data, message="energy used Data")
         return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal server error")
     
+
+
+@api_client_routes.post("/devices/graphical_view/voltage")
+async def voltage_data(params:VoltageData):
+    try:
+        data = await DeviceController.voltage_data(params)
+        resdata = successResponse(data, message="Voltage Data")
+        return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@api_client_routes.post("/devices/graphical_view/current")
+async def current_data(params:VoltageData):
+    try:
+        data = await DeviceController.current_data(params)
+        resdata = successResponse(data, message="Current Data")
+        return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
 # =================================================================================================
 # =================================================================================================
 
