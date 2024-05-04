@@ -13,8 +13,8 @@ from hooks.update_event_hooks import update_topics
 async def get_energy_data(data):
     try:
         current_datetime = get_current_datetime()
-        columns = "client_id, device_id, device, do_channel, device_run_hours, device_dc_bus_voltage,device_dc_bus_voltage2,device_dc_bus_voltage3, device_output_current,device_output_current2,device_output_current3, device_settings_freq, device_running_freq, device_rpm, device_flow, date, time, created_at"
-        value = f"{data.client_id},{data.device_id}, '{data.device}', {data.do_channel}, {data.device_run_hours},{data.device_dc_bus_voltage},{data.device_dc_bus_voltage_2},{data.device_dc_bus_voltage_3}, {data.device_output_current},{data.device_output_current_2},{data.device_output_current_3}, {data.device_settings_freq}, {data.device_running_freq}, {data.device_rpm}, {data.device_flow}, '{get_current_date()}', '{get_current_time()}', '{current_datetime}'"
+        columns = "client_id, device_id, device, do_channel,e1, e2, e3, r, y, b, r_y, y_b, b_y, curr1, curr2, curr3, activep1, activep2, activep3, apparentp1, apparentp2, apparentp3, pf1, pf2, pf3, freq, reactvp1, reactvp2, reactvp3, avaragevln, avaragevll, avaragecurrent, totkw, totkva, totkvar, runhr, date, time, created_at"
+        value = f"{data.client_id}, {data.device_id}, '{data.device}', {data.do_channel}, {data.e1}, {data.e2}, {data.e3}, {data.r}, {data.y}, {data.b}, {data.r_y}, {data.y_b}, {data.b_y}, {data.curr1}, {data.curr2}, {data.curr3}, {data.activep1}, {data.activep2}, {data.activep3}, {data.apparentp1}, {data.apparentp2}, {data.apparentp3}, {data.pf1}, {data.pf2}, {data.pf3}, {data.freq}, {data.reactvp1}, {data.reactvp2}, {data.reactvp3}, {data.avaragevln}, {data.avaragevll}, {data.avaragecurrent}, {data.totkw}, {data.totkva}, {data.totkvar}, {data.runhr}, '{get_current_date()}', '{get_current_time()}', '{current_datetime}'"
         energy_data_id = insert_data("td_energy_data", columns, value)
         
         
@@ -52,7 +52,7 @@ async def send_last_energy_data(client_id, device_id, device):
             from Library.WsConnectionManagerManyDeviceTypes import WsConnectionManagerManyDeviceTypes
             manager = WsConnectionManagerManyDeviceTypes()
             background_tasks = BackgroundTasks()
-            select="energy_data_id, client_id, device_id, device, do_channel, device_run_hours, device_dc_bus_voltage,device_dc_bus_voltage2,device_dc_bus_voltage3, device_output_current,device_output_current2,device_output_current3, device_settings_freq, device_running_freq, device_rpm, device_flow, date, time, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at"
+            select="energy_data_id, client_id, device_id, device, do_channel, e1, e2, e3, r, y, b, r_y, y_b, b_y, curr1, curr2, curr3, activep1, activep2, activep3, apparentp1, apparentp2, apparentp3, pf1, pf2, pf3, freq, reactvp1, reactvp2, reactvp3, avaragevln, avaragevll, avaragecurrent, totkw, totkva, totkvar, runhr, date, time, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at"
             condition = f"device_id = '{device_id}' AND device ='{device}' AND client_id = '{client_id}'"
             order_by="energy_data_id DESC"
                 

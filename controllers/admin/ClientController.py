@@ -53,7 +53,8 @@ def delete_organization(organization):
 def energy_data(energy_data):
     try:
         table="td_energy_data AS ed"
-        select="ed.energy_data_id, ed.device_id, ed.device, ed.do_channel, ed.device_run_hours, ed.device_dc_bus_voltage,ed.device_dc_bus_voltage2,ed.device_dc_bus_voltage3,ed.device_output_current,ed.device_output_current2,ed.device_output_current3, ed.device_settings_freq, ed.device_running_freq, ed.device_rpm, ed.device_flow, ed.date, ed.time , DATE_FORMAT(ed.created_at, '%Y-%m-%d %H:%i:%s') AS created_at"
+        select="ed.energy_data_id, ed.device_id, ed.device, ed.do_channel, ed.e1, ed.e2, ed.e3, ed.r, ed.y, ed.b, ed.r_y, ed.y_b, ed.b_y, ed.curr1, ed.curr2, ed.curr3, ed.activep1, ed.activep2, ed.activep3, ed.apparentp1, ed.apparentp2, ed.apparentp3, ed.pf1, ed.pf2, ed.pf3, ed.freq, ed.reactvp1, ed.reactvp2, ed.reactvp3, ed.avaragevln, ed.avaragevll, ed.avaragecurrent, ed.totkw, ed.totkva, ed.totkvar, ed.runhr, ed.date, ed.time , DATE_FORMAT(ed.created_at, '%Y-%m-%d %H:%i:%s') AS created_at"
+        
         condition = f"ed.device_id = {energy_data.device_id} AND ed.device = '{energy_data.device}' AND ed.date BETWEEN '{energy_data.start_date}' AND '{energy_data.end_date}'"
         order_by="ed.date DESC, ed.time DESC"
         data=select_data(table, select,condition,order_by)
