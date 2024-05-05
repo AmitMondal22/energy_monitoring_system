@@ -15,7 +15,6 @@ class WsConnectionManagerManyDeviceTypes:
                 data = file.read()
                 if data:
                     self.active_connections = json.loads(data)
-                    print("Active connections loaded from file", self.active_connections)
                 else:
                     self.active_connections = {}
         except (FileNotFoundError, json.JSONDecodeError) as e:
@@ -28,13 +27,12 @@ class WsConnectionManagerManyDeviceTypes:
         with open(self.connection_file, "w") as file:
             json.dump(connections_data, file)
 
-    async def connect(self, data_type: str, client_id: str, device_id: str, device: str, websocket: WebSocket):
+    async def connect(self, data_type:str, client_id: str, device_id: str, device: str, websocket: WebSocket):
         user_id = f"{data_type}-{client_id}-{device_id}-{device}"
         await websocket.accept()
         if user_id not in self.active_connections:
             self.active_connections[user_id] = []
-        self.active_connections[user_id].append(websocket)  # Store the WebSocket object directly
-        print("------------------------", websocket)
+        self.active_connections[user_id].append(websocket)
         self.save_connections()
 
     def disconnect(self, websocket: WebSocket, data_type:str, client_id: str, device_id: str, device: str):
@@ -58,7 +56,6 @@ class WsConnectionManagerManyDeviceTypes:
         print("activity connections///////////////",user_id)
         if user_id in self.active_connections:
             for websocket in self.active_connections[user_id]:
-                eval(websocket)
                 await websocket.send_text(message)
         else:
             print("user_id not in active_connections")
