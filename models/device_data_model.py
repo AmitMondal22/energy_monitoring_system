@@ -231,3 +231,10 @@ class UserDeviceList(BaseModel):
     device: str
     user_id: int
     organization_id:int
+
+
+
+class WsDeviceData(BaseModel):
+    client_id: int
+    device_id: int
+    device: str

@@ -46,6 +46,16 @@ async def post_energy_data(data: device_data_model.EnergyDeviceData):
     # except Exception as e:
     #     raise HTTPException(status_code=500, detail="Internal server error")
 
+@devices_routes.post("/ws_data_ems")
+async def post_ws_data(data: device_data_model.WsDeviceData):
+    try:
+        controllerRes =  await EnergyController.send_last_energy_data(data)
+        resdata = successResponse(controllerRes, message="data stored successfully")
+        return Response(content=json.dumps(resdata), media_type="application/json", status_code=200)
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 @devices_routes.post('/ups_data')
 async def post_ups_data(data: device_data_model.UpsDeviceData):
