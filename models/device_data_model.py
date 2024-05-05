@@ -224,3 +224,10 @@ class DeviceEdit(BaseModel):
     lat: str
     lon: str
     imei_no: str
+    
+class UserDeviceList(BaseModel):
+    client_id: int
+    device_id: int
+    device: str
+    user_id: int
+    organization_id:int

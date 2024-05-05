@@ -52,3 +52,17 @@ async def checked_devices(data):
             return "Device not found"
     except Exception as e:
         raise ValueError("Could not fetch data")
+    
+    
+    
+
+@staticmethod
+async def user_device_list(data):
+    try:
+        select="d.device_id, d.device, d.do_channel, d.model, d.lat, d.lon, d.imei_no, d.last_maintenance, DATE_FORMAT(d.created_at, '%Y-%m-%d %H:%i:%s') AS created_at, DATE_FORMAT(d.updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at"
+        condition = f"d.device_id = mud.device_id AND d.client_id = mud.client_id AND mud.client_id = {data.client_id} AND d.device_id = {data.device_id} AND d.device = '{data.device}' AND mud.user_id = {data.user_id} AND mud.organization_id = {data.organization_id}"
+        find_devices=select_data("md_device AS d, md_manage_user_device AS mud", select, condition,None)
+        print("find_devices>>>>>>>>>>>>>>>>>",find_devices)
+        return find_devices
+    except Exception as e:
+        raise ValueError("Could not fetch data")

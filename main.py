@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from json import JSONEncoder
 from datetime import date, datetime, timedelta
-from routes import api_client_routes, devices_routes, user_routes,auth_routes,mqtt_routes,ws_routes
+from routes import api_client_routes, devices_routes, user_routes,auth_routes,mqtt_routes,ws_routes,api_user_routes
 from decimal import Decimal
 import uvicorn
 
@@ -63,6 +63,9 @@ app.include_router(devices_routes.devices_routes, prefix="/api/device", tags=["d
 
 # Include user routes
 app.include_router(api_client_routes.api_client_routes, prefix="/api/client", tags=["client"])
+
+
+app.include_router(api_user_routes.user_routes, prefix="/api/user", tags=["api_user"])
 
 
 
