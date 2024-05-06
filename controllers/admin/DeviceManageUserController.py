@@ -22,8 +22,8 @@ def add_device(device):
 def list_user_device(params):
     try:
         table="md_manage_user_device AS mud, users AS u, md_device AS d, md_organization  AS o"
-        select="o.organization_name,o.organization_id,u.user_id,u.user_name,u.user_email,u.user_active_status,d.device_id,d.device,d.do_channel,d.model,d.lat,d.lon,d.imei_no, mud.manage_user_device_id"
-        condition=f"mud.user_id = u.user_id AND mud.device_id = d.device_id AND o.client_id={params.client_id}"
+        select="o.organization_name,o.organization_id,u.user_id,u.user_name,u.user_email,u.user_active_status,d.device_id,d.device,d.do_channel,d.model,d.lat,d.lon,d.imei_no,d.,device_type,d.meter_type, mud.manage_user_device_id"
+        condition=f"mud.user_id = u.user_id AND mud.device_id = d.device_id AND o.client_id={params.client_id} AND d.device_type='EN'"
         data = select_data(table, select,condition)
         return data
     except Exception as e:
