@@ -445,6 +445,19 @@ async def power_data(params:VoltageData):
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal server error")
+    
+@api_client_routes.post("/devices/graphical_view/total_power_analisis")
+async def  total_power_analisis(params:VoltageData):
+    try:
+        data = await DeviceController.total_power_analisis(params)
+        resdata = successResponse(data, message="Total Power Analisis Data")
+        return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
 # =================================================================================================
 # =================================================================================================
 
