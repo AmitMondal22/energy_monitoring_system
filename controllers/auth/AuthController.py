@@ -54,7 +54,13 @@ async def login(user) -> dict:
             elif user_info['user_type'] == 'O':
                 print("zdhcsdjkd",)
             elif user_info['user_type'] == 'U':
-                print("zdhcsdjkd",)
+                table="users AS u,  md_client AS c, md_organization AS org "
+                select="u.user_id, u.user_name, u.user_email, u.user_info_id, u.user_active_status, u.user_type, u.otp_number, u.otp_active_status, u.password, u.created_by, c.client_id, c.client_name, c.client_address, c.client_mobile, c.client_email, org.organization_name,org.organization_id"
+                condition=f"u.user_email = '{user.email}' AND u.user_info_id = org.organization_id AND org.client_id=c.client_id AND u.user_active_status = 'Y' AND u.user_type = 'U'"
+                order_by=None
+                login_data=select_one_data(table,select,condition,order_by) 
+                print(login_data["password"])
+                
             else:
                 raise ValueError("Invalid user type")
             
