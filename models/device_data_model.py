@@ -212,7 +212,21 @@ class DeviceAdd(BaseModel):
     lat: str
     lon: str
     imei_no: str
+    device_type: str
+    meter_type: str
     last_maintenance: date
+    @validator('meter_type')
+    def validate_alert_status(cls, v):
+        valid_alert_status = {"ENSF", "ENTF"}
+        if v not in valid_alert_status:
+            raise ValueError('Invalid alert status')
+        return v
+    @validator('device_type')
+    def validate_alert_status(cls, v):
+        valid_alert_status = {"EN", "UPS"}
+        if v not in valid_alert_status:
+            raise ValueError('Invalid alert status')
+        return v
 
 class DeviceEdit(BaseModel):
     device_id:int
@@ -224,6 +238,20 @@ class DeviceEdit(BaseModel):
     lat: str
     lon: str
     imei_no: str
+    device_type: str
+    meter_type: str
+    @validator('meter_type')
+    def validate_alert_status(cls, v):
+        valid_alert_status = {"ENSF", "ENTF"}
+        if v not in valid_alert_status:
+            raise ValueError('Invalid alert status')
+        return v
+    @validator('device_type')
+    def validate_alert_status(cls, v):
+        valid_alert_status = {"EN", "UPS"}
+        if v not in valid_alert_status:
+            raise ValueError('Invalid alert status')
+        return v
     
 class UserDeviceList(BaseModel):
     client_id: int

@@ -32,7 +32,10 @@ def select_data(table: str, select: Optional[str] = None, condition: Optional[st
             
             
 
-def select_one_data(table: str, select: Optional[str] = None, condition: Optional[str] = None,order_by:Optional[str]=None) -> Optional[Tuple]:
+            
+def select_one_data(table: str, select: Optional[str] = None, condition: Optional[str] = None, order_by: Optional[str] = None) -> Optional[Tuple]:
+    conne = None
+    cursor = None
     try:
         select_clause = select if select else "*"
         total_query = f"SELECT {select_clause} FROM {table}"
@@ -40,15 +43,14 @@ def select_one_data(table: str, select: Optional[str] = None, condition: Optiona
             total_query += f" WHERE {condition}"
         if order_by:
             total_query += f" ORDER BY {order_by}"
-        conne = connect()
-        print(">>>>>>>>>>>>>>>>>>>>",total_query)
+        
+        conne = connect()  # Assuming connect() is defined somewhere to create a database connection
         cursor = conne.cursor()
         cursor.execute(total_query)
         records = cursor.fetchone()
         result = createResponse(records, cursor.column_names, 0)
 
-        if records:
-            return result
+        return result
     except Exception as e:
         print(e)
         if conne:
@@ -56,10 +58,11 @@ def select_one_data(table: str, select: Optional[str] = None, condition: Optiona
         raise e
     finally:
         if cursor:
+            # Consume all results to avoid "Unread result found" error
+            cursor.fetchall()
             cursor.close()
         if conne:
             conne.close()
-            
             
             
 

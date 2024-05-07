@@ -11,7 +11,7 @@ from hooks.update_event_hooks import update_topics
 
 @staticmethod
 async def get_energy_data(data):
-    # try:
+    try:
         current_datetime = get_current_datetime()
         columns = "client_id, device_id, device, do_channel,e1, e2, e3, r, y, b, r_y, y_b, b_y, curr1, curr2, curr3, activep1, activep2, activep3, apparentp1, apparentp2, apparentp3, pf1, pf2, pf3, freq, reactvp1, reactvp2, reactvp3, avaragevln, avaragevll, avaragecurrent, totkw, totkva, totkvar, runhr, date, time, created_at"
         value = f"{data.client_id}, {data.device_id}, '{data.device}', {data.do_channel}, {data.e1}, {data.e2}, {data.e3}, {data.r}, {data.y}, {data.b}, {data.r_y}, {data.y_b}, {data.b_y}, {data.curr1}, {data.curr2}, {data.curr3}, {data.activep1}, {data.activep2}, {data.activep3}, {data.apparentp1}, {data.apparentp2}, {data.apparentp3}, {data.pf1}, {data.pf2}, {data.pf3}, {data.freq}, {data.reactvp1}, {data.reactvp2}, {data.reactvp3}, {data.avaragevln}, {data.avaragevll}, {data.avaragecurrent}, {data.totkw}, {data.totkva}, {data.totkvar}, {data.runhr}, '{get_current_date()}', '{get_current_time()}', '{current_datetime}'"
@@ -40,14 +40,14 @@ async def get_energy_data(data):
                 raise ValueError("Could not fetch data")
             user_data = {"energy_data_id":energy_data_id, "device_id": data.device_id, "device": data.device, "do_channel": data.do_channel}
         return user_data
-    # except Exception as e:
-    #     raise ValueError("Could not fetch data")
+    except Exception as e:
+        raise ValueError("Could not fetch data")
     
     
 
 @staticmethod  
 async def send_last_energy_data(client_id, device_id, device):
-        # try:
+        try:
             # Lazy import inside the function
             from Library.WsConnectionManagerManyDeviceTypes import WsConnectionManagerManyDeviceTypes
             manager = WsConnectionManagerManyDeviceTypes()
@@ -60,7 +60,7 @@ async def send_last_energy_data(client_id, device_id, device):
                 
             lastdata = select_one_data("td_energy_data", select, condition, order_by)
            
-            print("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT")
+            print("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",lastdata)
             # AlertLibrary.send_alert(client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
             # background_tasks.add_task(AlertLibrary.send_alert(client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder)))
             
@@ -76,8 +76,8 @@ async def send_last_energy_data(client_id, device_id, device):
             
             print("lastdata last energy data>>>>>>>>>>/////////",json.dumps(lastdata, cls=DecimalEncoder))
             return json.dumps(lastdata, cls=DecimalEncoder)
-        # except Exception as e:
-        #     raise ValueError("Could not fetch data")
+        except Exception as e:
+            raise ValueError("Could not fetch data")
     
     
  

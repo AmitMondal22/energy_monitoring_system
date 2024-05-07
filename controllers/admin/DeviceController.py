@@ -17,7 +17,7 @@ async def list_device(params):
 async def device_info(params):
     try:
         condition = f"client_id={params.client_id} AND device_id = {params.device_id} AND device_type='EN'"
-        select="device_id, client_id, device, device_name, do_channel, model, lat, lon, imei_no, last_maintenance,,device_type,meter_type DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at, DATE_FORMAT(updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at"
+        select="device_id, client_id, device, device_name, do_channel, model, lat, lon, imei_no, last_maintenance,device_type,meter_type, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at, DATE_FORMAT(updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at"
         data = select_one_data("md_device",select, condition,order_by="device_id DESC")
         
         select2="count(a.alert_id) alert, a.alert_type, a.unit_id,u.unit,u.unit_name"
@@ -33,7 +33,7 @@ async def add_device(params):
     try:
         
         
-        column="client_id, device, device_name, do_channel, model, lat, lon, imei_no, last_maintenance, created_at"
+        column="client_id, device, device_name, do_channel, model, lat, lon, imei_no, device_type, meter_type, last_maintenance, created_at"
         
         rows_data = []
         for params_data in params:
@@ -46,6 +46,8 @@ async def add_device(params):
                 "lat": params_data.lat,
                 "lon": params_data.lon,
                 "imei_no": params_data.imei_no,
+                "device_type": params_data.device_type,
+                "meter_type": params_data.meter_type,
                 "last_maintenance": params_data.last_maintenance,
                 "created_at": get_current_datetime()  # Assuming get_current_datetime() returns the current datetime
             }
@@ -60,7 +62,7 @@ async def add_device(params):
 async def edit_device(params):
     try:
         condition = f"device_id = {params.device_id} AND client_id = {params.client_id}"
-        columns={"device":params.device, "device_name":params.device_name, "do_channel":params.do_channel, "model":params.model, "lat":params.lat, "lon":params.lon, "imei_no":params.imei_no, "updated_at":get_current_datetime()}
+        columns={"device":params.device, "device_name":params.device_name, "do_channel":params.do_channel, "model":params.model, "lat":params.lat, "lon":params.lon, "imei_no":params.imei_no, "device_type" :params.device_type, "meter_type":params.meter_type, "updated_at":get_current_datetime()}
         data = update_data("md_device", columns, condition)
         print(data)
         return data
