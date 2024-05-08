@@ -47,6 +47,7 @@ def select_one_data(table: str, select: Optional[str] = None, condition: Optiona
         conne = connect()  # Assuming connect() is defined somewhere to create a database connection
         cursor = conne.cursor()
         cursor.execute(total_query)
+        print(total_query)
         records = cursor.fetchone()
         result = createResponse(records, cursor.column_names, 0)
 
@@ -303,3 +304,32 @@ def select_data_in_ranges(select: str, table: str, start: int, end: int, conditi
         if 'conn' in locals():
             conn.close()
 
+
+
+
+
+def custom_select_sql_query(sql,fetch_type=None):
+    try:
+        conn = connect()
+        cursor = conn.cursor()
+        cursor.execute(sql)
+        print(sql)
+        if fetch_type is not None :
+            records = cursor.fetchall()
+            result = createDbResponse(records, cursor.column_names, 1)
+        else:
+            records = cursor.fetchone()
+            result = createResponse(records, cursor.column_names, 0)
+        return result
+    except Exception as e:
+        print(e)
+        if conn:
+            conn.rollback()  # Rollback the transaction if an error occurs
+        raise e
+    finally:
+        if cursor:
+            # Consume all results to avoid "Unread result found" error
+            cursor.fetchall()
+            cursor.close()
+        if conn:
+            conn.close()
