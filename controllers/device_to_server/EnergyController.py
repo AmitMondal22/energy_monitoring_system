@@ -52,8 +52,8 @@ async def send_last_energy_data(client_id, device_id, device):
             from Library.WsConnectionManagerManyDeviceTypes import WsConnectionManagerManyDeviceTypes
             manager = WsConnectionManagerManyDeviceTypes()
             background_tasks = BackgroundTasks()
-            from routes.ws_routes import sennd_ws_message
-            custom_sql=f"""  SELECT 
+            from routes.ws_routes import sennd_ws_message            
+            custom_sql=f""" SELECT 
                                 td.energy_data_id, 
                                 td.client_id, 
                                 td.device_id, 
@@ -94,41 +94,17 @@ async def send_last_energy_data(client_id, device_id, device):
                                 td.date, 
                                 td.time, 
                                 DATE_FORMAT(td.created_at, '%Y-%m-%d %H:%i:%s') AS created_at,
-                                yesterday.e1 AS e1_yesterday,
-                                yesterday.e2 AS e2_yesterday,
-                                yesterday.e3 AS e3_yesterday,
-                                past_month.e1 AS e1_past_month,
-                                past_month.e2 AS e2_past_month,
-                                past_month.e3 AS e3_past_month,
-                                past_year.e1 AS e1_past_year,
-                                past_year.e2 AS e2_past_year,
-                                past_year.e3 AS e3_past_year
+                                (SELECT MAX(e1) FROM td_energy_data WHERE DATE(date) = DATE_SUB(CURDATE(), INTERVAL 1 DAY) AND device_id = td.device_id AND client_id = td.client_id AND device = td.device) AS e1_yesterday,
+                                (SELECT MAX(e2) FROM td_energy_data WHERE DATE(date) = DATE_SUB(CURDATE(), INTERVAL 1 DAY) AND device_id = td.device_id AND client_id = td.client_id AND device = td.device) AS e2_yesterday,
+                                (SELECT MAX(e3) FROM td_energy_data WHERE DATE(date) = DATE_SUB(CURDATE(), INTERVAL 1 DAY) AND device_id = td.device_id AND client_id = td.client_id AND device = td.device) AS e3_yesterday,
+                                (SELECT MAX(e1) FROM td_energy_data WHERE DATE(date) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) AND device_id = td.device_id AND client_id = td.client_id AND device = td.device) AS e1_past_month,
+                                (SELECT MAX(e2) FROM td_energy_data WHERE DATE(date) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) AND device_id = td.device_id AND client_id = td.client_id AND device = td.device) AS e2_past_month,
+                                (SELECT MAX(e3) FROM td_energy_data WHERE DATE(date) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) AND device_id = td.device_id AND client_id = td.client_id AND device = td.device) AS e3_past_month,
+                                (SELECT MAX(e1) FROM td_energy_data WHERE YEAR(date) = YEAR(CURDATE())-1 AND device_id = td.device_id AND client_id = td.client_id AND device = td.device) AS e1_past_year,
+                                (SELECT MAX(e2) FROM td_energy_data WHERE YEAR(date) = YEAR(CURDATE())-1 AND device_id = td.device_id AND client_id = td.client_id AND device = td.device) AS e2_past_year,
+                                (SELECT MAX(e3) FROM td_energy_data WHERE YEAR(date) = YEAR(CURDATE())-1 AND device_id = td.device_id AND client_id = td.client_id AND device = td.device) AS e3_past_year
                             FROM 
                                 td_energy_data td
-                            LEFT JOIN (
-                                SELECT 
-                                    e1, e2, e3, device_id, client_id,device
-                                FROM 
-                                    td_energy_data 
-                                WHERE 
-                                    DATE(date) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)
-                            ) AS yesterday ON td.device_id = yesterday.device_id AND td.client_id = yesterday.client_id AND td.device = yesterday.device
-                            LEFT JOIN (
-                                SELECT 
-                                    e1, e2, e3, device_id, client_id,device
-                                FROM 
-                                    td_energy_data 
-                                WHERE 
-                                    DATE(date) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
-                            ) AS past_month ON td.device_id = past_month.device_id AND td.client_id = past_month.client_id AND td.device = past_month.device
-                            LEFT JOIN (
-                                SELECT 
-                                    e1, e2, e3, device_id, client_id,device
-                                FROM 
-                                    td_energy_data 
-                                WHERE 
-                                    YEAR(date) = YEAR(CURDATE())-1
-                            ) AS past_year ON td.device_id = past_year.device_id AND td.client_id = past_year.client_id AND td.device = past_year.device
                             WHERE 
                                 td.device_id = '{device_id}'
                                 AND td.device = '{device}'
@@ -136,6 +112,7 @@ async def send_last_energy_data(client_id, device_id, device):
                             ORDER BY 
                                 td.energy_data_id DESC """
             lastdata=custom_select_sql_query(custom_sql,None)
+            print("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",json.dumps(lastdata, cls=DecimalEncoder))
             background_tasks.add_task(AlertLibrary.send_alert, client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
 
             await sennd_ws_message("EMS",client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
