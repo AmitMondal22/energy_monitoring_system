@@ -38,7 +38,7 @@ async def post_checked_devices(data: device_data_model.CheckedDevices):
 @devices_routes.post('/energy_data')
 async def post_energy_data(data: device_data_model.EnergyDeviceData):
     try:
-        controllerRes =  await EnergyController.get_energy_data(data)
+        controllerRes =  await EnergyController.get_energy_data(data,data.client_id,data.device)
         resdata = successResponse(controllerRes, message="data stored successfully")
         return Response(content=json.dumps(resdata), media_type="application/json", status_code=200)
     except ValueError as ve:
