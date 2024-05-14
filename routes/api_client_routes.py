@@ -320,9 +320,9 @@ async def list_device(request: Request):
     try:
         user_credentials = request.state.user_data
         client_id=user_credentials["client_id"]
-        user_id=user_credentials["user_id"]
-        organization_id=user_credentials["organization_id"]
         if user_credentials["user_type"] == "U":
+            user_id=user_credentials["user_id"]
+            organization_id=user_credentials["organization_id"]
             data= await DeviceController.user_device_list(client_id, user_id, organization_id)
         else:
             data = await DeviceController.list_device(client_id)
