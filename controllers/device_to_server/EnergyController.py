@@ -1,13 +1,9 @@
-from db_model.MASTER_MODEL import select_data, insert_data,update_data,delete_data,select_one_data,custom_select_sql_query
+from db_model.MASTER_MODEL import insert_data,custom_select_sql_query
 from utils.date_time_format import get_current_datetime,get_current_date,get_current_time
 from fastapi import BackgroundTasks
 from Library.DecimalEncoder import DecimalEncoder
 from Library import AlertLibrary
 import json
-from Library.MqttLibraryClass import MqttLibraryClass
-
-
-from hooks.update_event_hooks import update_topics
 
 @staticmethod
 async def get_energy_data(data):

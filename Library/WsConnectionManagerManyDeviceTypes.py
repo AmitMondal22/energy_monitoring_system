@@ -1,6 +1,5 @@
 import json
 from fastapi import WebSocket
-from typing import Dict, List
 
 class WsConnectionManagerManyDeviceTypes:
     """Class defining socket events"""

@@ -1,82 +1,91 @@
-from fastapi.responses import JSONResponse, StreamingResponse,Response
-from fastapi import Request,Header,HTTPException
-from typing import Coroutine, Any,Callable,Awaitable
-from fastapi.encoders import jsonable_encoder
+from fastapi import Request, status, HTTPException
+from utils.jwt_access import verify_token
 
-from fastapi import FastAPI
- 
-my_middleware_app = FastAPI()
- 
-@my_middleware_app.middleware("http")
-async def my_func(request: Request, call_next):
-    if "Authorization" in request.headers:
-        print(request.headers["Authorization"])
- 
-        request.state.name = "amit"
-        response = await call_next(request)
-        return response
-    else:
-        return JSONResponse(content=jsonable_encoder("Authorization header not provided."))
+async def mw_client(request: Request):
+    try:
+        authorization: str = request.headers.get("Authorization")
+        if not authorization:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Authorization header not provided",
+            )
+        
+        scheme, token = authorization.split()
+        if scheme.lower() != "bearer":
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid authentication scheme",
+            )
+        userdata_list=await verify_token(token)
+        print(">>>>>>>>>>>>>>>>>>>>>>??????????????????????",userdata_list)
+        if userdata_list['user_type'] != "C" or userdata_list is None :
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Access denied for this user type",
+            )
+        request.state.user_data = userdata_list
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error MW")
+    
+async def mw_user(request: Request):
+    try:
+        authorization: str = request.headers.get("Authorization")
+        if not authorization:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Authorization header not provided",
+            )
+        
+        scheme, token = authorization.split()
+        if scheme.lower() != "bearer":
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid authentication scheme",
+            )
+        userdata_list=await verify_token(token)
+        print(">>>>>>>>>>>>>>>>>>>>>>??????????????????????",userdata_list)
+        if userdata_list['user_type'] != "U" or userdata_list is None :
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Access denied for this user type",
+            )
+        request.state.user_data = userdata_list
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error MW")
     
     
     
-
-# async def auth_required_middleware(request: Request, call_next: Coroutine):
-#     """Middleware for authenticating users on required routes"""
-#     token = str(
-#         request.cookies.get("token")
-#     )  # Stringyfy-ing because pyjwt might cry if it gets NoneType
-
-#     try:
-#         user_id = JWTService.verify_and_return_id(token)
-#         request.state.user_id = user_id
-#         response: StreamingResponse = await call_next(request)
-#         return response
-#     except:
-#         return JSONResponse(content={"description": "Unauthorized"}, status_code=401)
-
-
-# async def public_required_middleware(request: Request, call_next: Coroutine):
-#     """Middleware for authenticating users on required routes"""
-#     # token = str(
-#     #     request.cookies.get("token")
-#     # )  # Stringyfy-ing because pyjwt might cry if it gets NoneType
-
-#     try:
-#         user_id = 1
-#         request.user_id = user_id
-#         response: StreamingResponse = await call_next(request)
-#         return response
-#     except:
-#         return JSONResponse(content={"description": "Unauthorized"}, status_code=401)
-
-
-
-# async def public_required_middleware(request: Request, call_next, authorization: str = Header(None)):
-#     """Middleware for authenticating users on required routes"""
-#     try:
-#         if authorization == "Bearer token":  # Replace "Bearer token" with your expected header value
-#             user_id = 1  # Placeholder for authentication logic
-#             request.state.user_id = user_id
-#             response = await call_next(request)
-#             return response
-#         else:
-#             raise HTTPException(status_code=401, detail="Unauthorized")
-#     except HTTPException as http_exception:
-#         raise http_exception
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail="Internal Server Error")
-
-
-
-
-# async def public_required_middleware(request: Request, call_next: Any,authorization: str = Header(None)):
-#     """Middleware for authenticating users on required routes"""
-#     try:
-#         user_id = 1  # Example user ID, replace with your actual authentication logic
-#         request.state.user_id = user_id
-#         response = await call_next(request)
-#         return response
-#     except:
-#         return JSONResponse(content={"description": "Unauthorized"}, status_code=401)
-
+    
+# =========================================================
+async def mw_user_client(request: Request):
+    try:
+        authorization: str = request.headers.get("Authorization")
+        if not authorization:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Authorization header not provided",
+            )
+        
+        scheme, token = authorization.split()
+        if scheme.lower() != "bearer":
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid authentication scheme",
+            )
+        userdata_list=await verify_token(token)
+        print(">>>>>>>>>>>>>>>>>>>>>>??????????????????????",userdata_list)
+        if userdata_list['user_type'] == "U" or userdata_list['user_type'] == "C" or userdata_list is not None :
+            request.state.user_data = userdata_list
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Access denied for this user type",
+            )
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error MW")

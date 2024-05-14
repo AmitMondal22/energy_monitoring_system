@@ -1,4 +1,4 @@
-from db_model.MASTER_MODEL import select_data, insert_data,update_data,delete_data,select_one_data
+from db_model.MASTER_MODEL import insert_data,select_one_data
 from utils.date_time_format import get_current_datetime,get_current_date,get_current_time
 
 from Library.DecimalEncoder import DecimalEncoder

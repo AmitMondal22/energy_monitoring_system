@@ -1,16 +1,30 @@
-from db_model.MASTER_MODEL import select_data, insert_data,update_data,delete_data,delete_insert_restore,select_one_data,batch_insert_data
+from db_model.MASTER_MODEL import select_data,update_data,select_one_data,batch_insert_data
 from utils.date_time_format import get_current_datetime, get_current_date_time_utc
 
 
 @staticmethod
-async def list_device(params):
+async def list_device(client_id):
     try:
         select="device_id, device,device_type,meter_type"
         # select="device_id, device, do_channel, model, lat, lon, imei_no, last_maintenance, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at, DATE_FORMAT(updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at"
-        data = select_data("md_device", select)
+        condition=f"client_id={client_id} AND device_type='EN'"
+        data = select_data("md_device", select, condition)
         return data
     except Exception as e:
         raise e
+    
+    
+@staticmethod
+async def user_device_list(client_id, user_id, organization_id):
+    try:
+        select="d.device_id, d.device, d.do_channel, d.model, d.lat, d.lon, d.imei_no,d.device_type,d.meter_type, d.last_maintenance, DATE_FORMAT(d.created_at, '%Y-%m-%d %H:%i:%s') AS created_at, DATE_FORMAT(d.updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at"
+        
+        condition = f"d.device_id = mud.device_id AND d.client_id = mud.client_id AND mud.client_id = {client_id} AND mud.user_id = {user_id} AND mud.organization_id = {organization_id} AND d.device_type='EN'"
+        find_devices=select_data("md_device AS d, md_manage_user_device AS mud", select, condition,None)
+        print("find_devices>>>>>>>>>>>>>>>>>",find_devices)
+        return find_devices
+    except Exception as e:
+        raise ValueError("Could not fetch data")
 
 
 @staticmethod

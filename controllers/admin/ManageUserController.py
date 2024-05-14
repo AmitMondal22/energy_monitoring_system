@@ -1,8 +1,8 @@
-from db_model.MASTER_MODEL import select_data, insert_data,update_data,delete_data,delete_insert_restore,select_one_data
+from db_model.MASTER_MODEL import select_data, insert_data,update_data,delete_insert_restore,select_one_data
 from utils.date_time_format import get_current_datetime
 from utils.has_password import get_password_hash
 from utils.otp import generate_otp
-from utils.jwt_access import create_access_token
+
 
 
 @staticmethod

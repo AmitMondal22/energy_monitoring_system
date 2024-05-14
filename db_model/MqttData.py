@@ -1,6 +1,6 @@
 from config.db import connect
 from typing import Tuple, List, Any, Optional, Dict
-from utils.response import createResponse, createDbResponse
+from utils.response import createDbResponse
 
 
 async def mqtt_topic_name():

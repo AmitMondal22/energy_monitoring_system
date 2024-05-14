@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Response,WebSocket,WebSocketDisconnect
+from fastapi import APIRouter, HTTPException, Response,WebSocket,WebSocketDisconnect,Depends,Request
 
 from controllers.admin import ClientController, ManageUserController, DeviceManageUserController,DeviceController
 
@@ -14,6 +14,8 @@ from models.device_data_model import EnergyData,AddAlert,DeviceAdd,DeviceEdit,Ed
 from Library.DecimalEncoder import DecimalEncoder
 from Library.CustomEncoder import CustomEncoder
 from db_model.MASTER_MODEL import select_one_data
+
+from middleware.MyMiddleware import mw_client,mw_user,mw_user_client
 
 
 
@@ -44,7 +46,7 @@ async def websocket_endpoint(websocket: WebSocket):
         await manager.send_personal_message("Bye!!!",websocket)
         
 #  send_message      
-@api_client_routes.get("/send_message")
+@api_client_routes.get("/send_message", dependencies=[Depends(mw_client)])
 async def send_message(message: str):
     await manager.broadcast(message)
     return {"message": "Sent message: {}".format(message)}
@@ -67,7 +69,7 @@ async def websocket_endpoint(websocket: WebSocket, user_id: int):
 #     return {"message": "Message sent successfully"}
 
 
-@api_client_routes.post("/send_message/{client_id}/{device_id}/{device}/{message}")
+@api_client_routes.post("/send_message/{client_id}/{device_id}/{device}/{message}", dependencies=[Depends(mw_client)])
 async def send_message(client_id: int,device_id:int,device:str, message: str):
     await manager.send_personal_message(client_id, device_id, device, json.dumps(message))
     return {"message": "Message sent successfully"}
@@ -113,13 +115,15 @@ class SendEnergySocket:
             raise ValueError("Could not fetch data")
 # ================================================================
 # ================================================================
-    
+  
+
+  
 # ==========================================================================
 # ==========================================================================
 
 
-@api_client_routes.post("/manage_organization/add")
-async def add_organization(organization:AddOrganization):
+@api_client_routes.post("/manage_organization/add", dependencies=[Depends(mw_client)])
+async def add_organization(request: Request,organization:AddOrganization):
     try:
         data = ClientController.add_organization(organization)   
         resdata = successResponse(data, message="User registered successfully")
@@ -134,8 +138,8 @@ async def add_organization(organization:AddOrganization):
     
     
     
-@api_client_routes.post("/manage_organization/list")
-async def list_organization(params:ListOrganization):
+@api_client_routes.post("/manage_organization/list", dependencies=[Depends(mw_client)])
+async def list_organization(request: Request,params:ListOrganization):
     try:
         # print(params)
         data = ClientController.list_organization(params)
@@ -148,8 +152,8 @@ async def list_organization(params:ListOrganization):
         # For any other unexpected error, return a 500 Internal Server Error
         raise HTTPException(status_code=500, detail="Internal server error")
     
-@api_client_routes.post("/manage_organization/edit")
-async def edit_organization(organization:EditOrganization):
+@api_client_routes.post("/manage_organization/edit", dependencies=[Depends(mw_client)])
+async def edit_organization(request: Request,organization:EditOrganization):
     try:
         data = ClientController.edit_organization(organization)
         resdata = successResponse(data, message="List of organizations")
@@ -162,8 +166,8 @@ async def edit_organization(organization:EditOrganization):
         raise HTTPException(status_code=500, detail="Internal server error ")
     
 
-@api_client_routes.post("/manage_organization/delete")
-async def delete_organization(organization:DeleteOrganization):
+@api_client_routes.post("/manage_organization/delete", dependencies=[Depends(mw_client)])
+async def delete_organization(request: Request,organization:DeleteOrganization):
     try:
         data = ClientController.delete_organization(organization)
         resdata = successResponse(data, message="Organization deleted successfully")
@@ -182,8 +186,8 @@ async def delete_organization(organization:DeleteOrganization):
 
 
 
-@api_client_routes.post("/manage_user/add")
-async def add_user(user:AddUser):
+@api_client_routes.post("/manage_user/add", dependencies=[Depends(mw_client)])
+async def add_user(request: Request,user:AddUser):
     try:
         data = ManageUserController.add_user(user)   
         resdata = successResponse(data, message="User registered successfully")
@@ -195,8 +199,8 @@ async def add_user(user:AddUser):
         # For any other unexpected error, return a 500 Internal Server Error
         raise HTTPException(status_code=500, detail="Internal server error")
     
-@api_client_routes.post("/manage_user/list")
-async def list_user(params:ListUsers):
+@api_client_routes.post("/manage_user/list", dependencies=[Depends(mw_client)])
+async def list_user(request: Request,params:ListUsers):
     try:
         data = ManageUserController.list_user(params)
         resdata = successResponse(data, message="List of users")
@@ -208,9 +212,9 @@ async def list_user(params:ListUsers):
         # For any other unexpected error, return a 500 Internal Server Error
         raise HTTPException(status_code=500, detail="Internal server error")
     
-@api_client_routes.post("/manage_user/list_user")
+@api_client_routes.post("/manage_user/list_user", dependencies=[Depends(mw_client)])
 # @api_client_routes.get("/manage_user/list_user/{user_id}")
-async def list_user(params:UserInfo):
+async def list_user(request: Request,params:UserInfo):
     try:
         data = ManageUserController.user_info(params)
         resdata = successResponse(data, message="List of users")
@@ -222,8 +226,8 @@ async def list_user(params:UserInfo):
         # For any other unexpected error, return a 500 Internal Server Error
         raise HTTPException(status_code=500, detail="Internal server error")
     
-@api_client_routes.post("/manage_user/edit")
-async def edit_user(user:EditUser):
+@api_client_routes.post("/manage_user/edit", dependencies=[Depends(mw_client)])
+async def edit_user(request: Request,user:EditUser):
     try:
         data = ManageUserController.edit_user(user)
         resdata = successResponse(data, message="List of users")
@@ -236,8 +240,8 @@ async def edit_user(user:EditUser):
         raise HTTPException(status_code=500, detail="Internal server error ")
 
 
-@api_client_routes.post("/manage_user/delete")
-async def delete_user(user:DeleteUser):
+@api_client_routes.post("/manage_user/delete", dependencies=[Depends(mw_client)])
+async def delete_user(request: Request,user:DeleteUser):
     try:
         data = ManageUserController.delete_user(user)
         resdata = successResponse(data, message="User deleted successfully")
@@ -254,8 +258,8 @@ async def delete_user(user:DeleteUser):
 
 
 
-@api_client_routes.post("/manage_user/add_device")
-async def add_device(user:UserDeviceAdd):
+@api_client_routes.post("/manage_user/add_device", dependencies=[Depends(mw_client)])
+async def add_device(request: Request,user:UserDeviceAdd):
     try:
         data = DeviceManageUserController.add_device(user)
         resdata = successResponse(data, message="Device added successfully")
@@ -267,8 +271,8 @@ async def add_device(user:UserDeviceAdd):
         # For any other unexpected error, return a 500 Internal Server Error
         raise HTTPException(status_code=500, detail="Internal server error")
     
-@api_client_routes.post("/manage_user/list_user_device")
-async def list_user_device(params:ClientId):
+@api_client_routes.post("/manage_user/list_user_device", dependencies=[Depends(mw_client)])
+async def list_user_device(request: Request,params:ClientId):
     try:
         data = DeviceManageUserController.list_user_device(params)
         resdata = successResponse(data, message="List of users")
@@ -281,8 +285,8 @@ async def list_user_device(params:ClientId):
         raise HTTPException(status_code=500, detail="Internal server error")
     
     
-@api_client_routes.post("/manage_user/edit_user_device")
-async def edit_user_device(user:UserDeviceEdit):
+@api_client_routes.post("/manage_user/edit_user_device", dependencies=[Depends(mw_client)])
+async def edit_user_device(request: Request,user:UserDeviceEdit):
     try:
         data = DeviceManageUserController.edit_device(user)
         resdata = successResponse(data, message="List of user devices")
@@ -295,8 +299,8 @@ async def edit_user_device(user:UserDeviceEdit):
         raise HTTPException(status_code=500, detail="Internal server error ")
     
     
-@api_client_routes.post("/manage_user/delete_user_device")
-async def delete_user_device(user:UserDeviceDelete):
+@api_client_routes.post("/manage_user/delete_user_device", dependencies=[Depends(mw_client)])
+async def delete_user_device(request: Request,user:UserDeviceDelete):
     try:
         data = DeviceManageUserController.delete_device(user)
         resdata = successResponse(data, message="List of users")
@@ -311,10 +315,17 @@ async def delete_user_device(user:UserDeviceDelete):
 # =================================================================================================
 # =================================================================================================
 
-@api_client_routes.post("/devices/list")
-async def list_device(params:ClientId):
+@api_client_routes.post("/devices/list", dependencies=[Depends(mw_user_client)])
+async def list_device(request: Request):
     try:
-        data = await DeviceController.list_device(params)
+        user_credentials = request.state.user_data
+        client_id=user_credentials["client_id"]
+        user_id=user_credentials["user_id"]
+        organization_id=user_credentials["organization_id"]
+        if user_credentials["user_type"] == "U":
+            data= await DeviceController.user_device_list(client_id, user_id, organization_id)
+        else:
+            data = await DeviceController.list_device(client_id)
         resdata = successResponse(data, message="List of devices")
         return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
     except ValueError as ve:
@@ -326,8 +337,8 @@ async def list_device(params:ClientId):
     
     
     
-@api_client_routes.post("/devices/device_info")
-async def list_device(params:DeviceInfo):
+@api_client_routes.post("/devices/device_info", dependencies=[Depends(mw_client)])
+async def list_device(request: Request,params:DeviceInfo):
     try:
         data = await DeviceController.device_info(params)
         resdata = successResponse(data, message="List of devices")
@@ -341,8 +352,8 @@ async def list_device(params:DeviceInfo):
     
 
 
-@api_client_routes.post("/manage/devices/add")
-async def add_device(params:List[DeviceAdd]):
+@api_client_routes.post("/manage/devices/add", dependencies=[Depends(mw_client)])
+async def add_device(request: Request,params:List[DeviceAdd]):
     try:
         data = await DeviceController.add_device(params)
         resdata = successResponse(data, message="Device added successfully")
@@ -353,8 +364,8 @@ async def add_device(params:List[DeviceAdd]):
         raise HTTPException(status_code=500, detail="Internal server error")
     
     
-@api_client_routes.post("/manage/devices/edit")
-async def edit_device(params:DeviceEdit):
+@api_client_routes.post("/manage/devices/edit", dependencies=[Depends(mw_client)])
+async def edit_device(request: Request,params:DeviceEdit):
     try:
         data = await DeviceController.edit_device(params)
         resdata = successResponse(data, message="Device edited successfully")
@@ -366,8 +377,8 @@ async def edit_device(params:DeviceEdit):
 
 
 
-@api_client_routes.post("/manage/devices/list")
-async def list_device(params:ClientId):
+@api_client_routes.post("/manage/devices/list", dependencies=[Depends(mw_client)])
+async def list_device(request: Request,params:ClientId):
     try:
         data = await DeviceController.manage_list_device(params)
         resdata = successResponse(data, message="List of devices")
@@ -381,8 +392,8 @@ async def list_device(params:ClientId):
 
 # =================================================================================================
 # =================================================================================================
-@api_client_routes.post("/devices/energy_data")
-async def energy_data(params:EnergyData):
+@api_client_routes.post("/devices/energy_data", dependencies=[Depends(mw_client)])
+async def energy_data(request: Request,params:EnergyData):
     try:
         data = ClientController.energy_data(params)
         resdata = successResponse(data, message="devices Data")
@@ -398,8 +409,8 @@ async def energy_data(params:EnergyData):
     
     
     
-@api_client_routes.post("/devices/graphical_view/energy_used")
-async def energy_used(params:EnergyUsed):
+@api_client_routes.post("/devices/graphical_view/energy_used", dependencies=[Depends(mw_client)])
+async def energy_used(request: Request,params:EnergyUsed):
     try:
         data = await DeviceController.energy_used(params)
         resdata = successResponse(data, message="energy used Data")
@@ -411,8 +422,8 @@ async def energy_used(params:EnergyUsed):
     
 
 
-@api_client_routes.post("/devices/graphical_view/voltage")
-async def voltage_data(params:VoltageData):
+@api_client_routes.post("/devices/graphical_view/voltage", dependencies=[Depends(mw_client)])
+async def voltage_data(request: Request,params:VoltageData):
     try:
         data = await DeviceController.voltage_data(params)
         resdata = successResponse(data, message="Voltage Data")
@@ -423,8 +434,8 @@ async def voltage_data(params:VoltageData):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@api_client_routes.post("/devices/graphical_view/current")
-async def current_data(params:VoltageData):
+@api_client_routes.post("/devices/graphical_view/current", dependencies=[Depends(mw_client)])
+async def current_data(request: Request,params:VoltageData):
     try:
         data = await DeviceController.current_data(params)
         resdata = successResponse(data, message="Current Data")
@@ -435,8 +446,8 @@ async def current_data(params:VoltageData):
         raise HTTPException(status_code=500, detail="Internal server error")
     
 
-@api_client_routes.post("/devices/graphical_view/power")
-async def power_data(params:VoltageData):
+@api_client_routes.post("/devices/graphical_view/power", dependencies=[Depends(mw_client)])
+async def power_data(request: Request,params:VoltageData):
     try:
         data = await DeviceController.power_data(params)
         resdata = successResponse(data, message="Power Data")
@@ -447,7 +458,7 @@ async def power_data(params:VoltageData):
         raise HTTPException(status_code=500, detail="Internal server error")
     
 @api_client_routes.post("/devices/graphical_view/total_power_analisis")
-async def  total_power_analisis(params:VoltageData):
+async def  total_power_analisis(request: Request,params:VoltageData):
     try:
         data = await DeviceController.total_power_analisis(params)
         resdata = successResponse(data, message="Total Power Analisis Data")
@@ -475,8 +486,8 @@ async def  total_power_analisis(params:VoltageData):
 
 
 
-@api_client_routes.post("/unit/list")
-async def list_unit():
+@api_client_routes.post("/unit/list", dependencies=[Depends(mw_client)])
+async def list_unit(request: Request):
     try:
         data = await UnitController.list_unit()
         resdata = successResponse(data, message="List of units")
@@ -489,8 +500,8 @@ async def list_unit():
         raise HTTPException(status_code=500, detail="Internal server error")
     
 
-@api_client_routes.post("/alert/add")
-async def add_alert(alert:List[AddAlert]):
+@api_client_routes.post("/alert/add", dependencies=[Depends(mw_client)])
+async def add_alert(request: Request,alert:List[AddAlert]):
     try:
         data = AlertController.add_alert(alert)
         resdata = successResponse(data, message="Alert added successfully")
@@ -503,8 +514,8 @@ async def add_alert(alert:List[AddAlert]):
         # For any other unexpected error, return a 500 Internal Server Error
         raise HTTPException(status_code=500, detail="Internal server error")
 
-@api_client_routes.post("/alert/list")
-async def list_alert(params:ClientId):
+@api_client_routes.post("/alert/list", dependencies=[Depends(mw_client)])
+async def list_alert(request: Request,params:ClientId):
     try:
         data = await AlertController.list_alert(params)
         resdata = successResponse(data, message="List of alerts")
@@ -516,8 +527,8 @@ async def list_alert(params:ClientId):
         # For any other unexpected error, return a 500 Internal Server Error
         raise HTTPException(status_code=500, detail="Internal server error")
     
-@api_client_routes.post("/alert/edit")
-async def edit_alert(params:EditAlert):
+@api_client_routes.post("/alert/edit", dependencies=[Depends(mw_client)])
+async def edit_alert(request: Request,params:EditAlert):
     try:
         data = await AlertController.edit_alert(params)
         resdata = successResponse(data, message="Alert edited successfully")
@@ -529,8 +540,8 @@ async def edit_alert(params:EditAlert):
         # For any other unexpected error, return a 500 Internal Server Error
         raise HTTPException(status_code=500, detail="Internal server error")
 
-@api_client_routes.post("/alert/delete")
-async def delete_alert(params:DeleteAlert):
+@api_client_routes.post("/alert/delete", dependencies=[Depends(mw_client)])
+async def delete_alert(request: Request,params:DeleteAlert):
     try:
         data = await AlertController.delete_alert(params)
         if data > 0:
