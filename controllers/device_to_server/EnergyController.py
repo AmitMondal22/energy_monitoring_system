@@ -46,7 +46,8 @@ async def get_energy_data(data:device_data_model.EnergyDeviceData,client_id,devi
             # from routes.api_client_routes import SendEnergySocket
             # lastdata=await SendEnergySocket.send_last_energy_data(data.client_id, device_id, data.device)
             # lastdata=await send_last_energy_data(client_id, device_id,device)
-            background_tasks.add_task(send_last_energy_data, client_id, device_id,device)
+            await send_last_energy_data(client_id, device_id,device)
+            # background_tasks.add_task(send_last_energy_data, client_id, device_id,device)
             # if lastdata is None:
             #     raise ValueError("Could not fetch data")
             user_data = {"energy_data_id":energy_data_id, "device_id": device_id, "device": device, "do_channel": data.CH}
@@ -166,7 +167,7 @@ async def send_last_energy_data(client_id, device_id, device):
             background_tasks.add_task(AlertLibrary.send_alert, client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
             print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
             await sennd_ws_message("EMS",client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
-            # return json.dumps(lastdata, cls=DecimalEncoder)
+            return json.dumps(lastdata, cls=DecimalEncoder)
         except Exception as e:
             raise ValueError("Could not fetch data",e)
     
