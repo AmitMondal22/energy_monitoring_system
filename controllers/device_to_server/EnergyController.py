@@ -71,6 +71,7 @@ async def send_last_energy_data(client_id, device_id, device):
                                 td.device_id, 
                                 td.device, 
                                 td.do_channel, 
+                                td.tw, 
                                 td.e1, 
                                 td.e2, 
                                 td.e3, 
