@@ -103,7 +103,7 @@ async def login(user) -> dict:
         user_info = select_one_data("users", base_select, base_condition, None)
         
         if user_info is None:
-            raise ValueError("User login failed")
+            raise ValueError("User not found")
         
         # Prepare select fields and joins based on user type
         select_fields = [
