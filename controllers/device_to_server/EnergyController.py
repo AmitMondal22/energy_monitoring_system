@@ -5,12 +5,14 @@ from Library.DecimalEncoder import DecimalEncoder
 from Library import AlertLibrary
 import json
 from models import device_data_model
+from utils.week_date import weekdays_date
 
 
 
 @staticmethod
 async def get_energy_data(data:device_data_model.EnergyDeviceData,client_id,device):
     try:
+        background_tasks = BackgroundTasks()
         device_data=select_one_data("md_device","device_id",f"client_id={client_id} AND device='{device}'")
         if device_data is None:
             raise ValueError("device not found")
@@ -43,9 +45,10 @@ async def get_energy_data(data:device_data_model.EnergyDeviceData,client_id,devi
         else:
             # from routes.api_client_routes import SendEnergySocket
             # lastdata=await SendEnergySocket.send_last_energy_data(data.client_id, device_id, data.device)
-            lastdata=await send_last_energy_data(client_id, device_id,device)
-            if lastdata is None:
-                raise ValueError("Could not fetch data")
+            # lastdata=await send_last_energy_data(client_id, device_id,device)
+            background_tasks.add_task(send_last_energy_data, client_id, device_id,device)
+            # if lastdata is None:
+            #     raise ValueError("Could not fetch data")
             user_data = {"energy_data_id":energy_data_id, "device_id": device_id, "device": device, "do_channel": data.CH}
         return user_data
     except Exception as e:
@@ -114,17 +117,56 @@ async def send_last_energy_data(client_id, device_id, device):
                             FROM 
                                 td_energy_data td
                             WHERE 
-                                td.device_id = '{device_id}'
+                                td.device_id = {device_id}
                                 AND td.device = '{device}'
-                                AND td.client_id = '{client_id}'
+                                AND td.client_id = {client_id}
                             ORDER BY 
                                 td.energy_data_id DESC """
             lastdata=custom_select_sql_query(custom_sql,None)
-            print("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",json.dumps(lastdata, cls=DecimalEncoder))
+            
+            
+            # week_date=weekdays_date()
+            
+            
+            # custom_sql2=f""" SELECT 
+            #                         t.e1, 
+            #                         t.e2, 
+            #                         t.e3, 
+            #                         t.date,
+            #                         t.e1 - LAG(t.e1) OVER (ORDER BY t.date, t.time) AS current_e1,
+            #                         t.e2 - LAG(t.e2) OVER (ORDER BY t.date, t.time) AS current_e2,
+            #                         t.e3 - LAG(t.e3) OVER (ORDER BY t.date, t.time) AS current_e3
+            #                     FROM 
+            #                         td_energy_data t
+            #                     INNER JOIN (
+            #                         SELECT 
+            #                             date, 
+            #                             MAX(CONCAT(date, ' ', time)) AS max_datetime
+            #                         FROM 
+            #                             td_energy_data
+            #                         WHERE 
+            #                             date >= CURDATE() - INTERVAL 8 DAY
+            #                             AND client_id = {client_id} 
+            #                             AND device_id = {device_id}
+            #                             AND device = '{device}'
+            #                         GROUP BY 
+            #                             date
+            #                     ) sub
+            #                     ON CONCAT(t.date, ' ', t.time) = sub.max_datetime
+            #                     WHERE
+            #                         t.client_id = {client_id}
+            #                         AND t.device_id = {device_id}
+            #                         AND t.device = '{device}'
+            #                     ORDER BY 
+            #                         t.date DESC; """
+            
+            # lastdata_weekdata=custom_select_sql_query(custom_sql2,None)
+            # print("Last data",lastdata_weekdata)
+            
             background_tasks.add_task(AlertLibrary.send_alert, client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
 
             await sennd_ws_message("EMS",client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
-            return json.dumps(lastdata, cls=DecimalEncoder)
+            # return json.dumps(lastdata, cls=DecimalEncoder)
         except Exception as e:
             raise ValueError("Could not fetch data",e)
     

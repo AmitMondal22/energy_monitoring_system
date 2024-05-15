@@ -50,8 +50,8 @@ async def post_energy_data(data: device_data_model.EnergyDeviceData):
 async def post_ws_data(data: device_data_model.WsDeviceData):
     try:
         print(">>>>>>>>>>>>>>....",data)
-        controllerRes =  await EnergyController.send_last_energy_data(client_id=data.client_id, device_id=data.device_id, device=data.device)
-        resdata = successResponse(controllerRes, message="data stored successfully")
+        await EnergyController.send_last_energy_data(client_id=data.client_id, device_id=data.device_id, device=data.device)
+        resdata = successResponse("success", message="data stored successfully")
         return Response(content=json.dumps(resdata), media_type="application/json", status_code=200)
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
