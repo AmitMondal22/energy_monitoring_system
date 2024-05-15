@@ -1,16 +1,28 @@
-from db_model.MASTER_MODEL import insert_data,custom_select_sql_query
+from db_model.MASTER_MODEL import insert_data,custom_select_sql_query,select_one_data
 from utils.date_time_format import get_current_datetime,get_current_date,get_current_time
 from fastapi import BackgroundTasks
 from Library.DecimalEncoder import DecimalEncoder
 from Library import AlertLibrary
 import json
+from models import device_data_model
+
+
 
 @staticmethod
-async def get_energy_data(data,client_id,device):
+async def get_energy_data(data:device_data_model.EnergyDeviceData,client_id,device):
     try:
+        device_data=select_one_data("md_device","device_id",f"client_id={client_id} AND device='{device}'")
+        if device_data is None:
+            raise ValueError("device not found")
+        
+        device_id=device_data["device_id"]
         current_datetime = get_current_datetime()
-        columns = "client_id, device_id, device, do_channel,e1, e2, e3, r, y, b, r_y, y_b, b_y, curr1, curr2, curr3, activep1, activep2, activep3, apparentp1, apparentp2, apparentp3, pf1, pf2, pf3, freq, reactvp1, reactvp2, reactvp3, avaragevln, avaragevll, avaragecurrent, totkw, totkva, totkvar, runhr, date, time, created_at"
-        value = f"{client_id}, {data.device_id}, '{device}', {data.do_channel}, {data.e1}, {data.e2}, {data.e3}, {data.r}, {data.y}, {data.b}, {data.r_y}, {data.y_b}, {data.b_y}, {data.curr1}, {data.curr2}, {data.curr3}, {data.activep1}, {data.activep2}, {data.activep3}, {data.apparentp1}, {data.apparentp2}, {data.apparentp3}, {data.pf1}, {data.pf2}, {data.pf3}, {data.freq}, {data.reactvp1}, {data.reactvp2}, {data.reactvp3}, {data.avaragevln}, {data.avaragevll}, {data.avaragecurrent}, {data.totkw}, {data.totkva}, {data.totkvar}, {data.runhr}, '{get_current_date()}', '{get_current_time()}', '{current_datetime}'"
+        columns = "client_id, device_id, device, do_channel,tw,e1, e2, e3, r, y, b, r_y, y_b, b_r, curr1, curr2, curr3, activep1, activep2, activep3, apparentp1, apparentp2, apparentp3, pf1, pf2, pf3, freq, reactvp1, reactvp2, reactvp3, avaragevln, avaragevll, avaragecurrent, totkw, totkva, totkvar, runhr, date, time, created_at"
+        # value = f"{client_id}, {device_id}, '{device}', {data.CH}, {data.KWH1}, {data.KWH2}, {data.KWH3}, {data.R}, {data.Y}, {data.B}, {data.R_Y}, {data.Y_B}, {data.B_R}, {data.curr1}, {data.curr2}, {data.curr3}, {data.activep1}, {data.activep2}, {data.activep3}, {data.apparentp1}, {data.apparentp2}, {data.apparentp3}, {data.pf1}, {data.pf2}, {data.pf3}, {data.freq}, {data.reactvp1}, {data.reactvp2}, {data.reactvp3}, {data.avaragevln}, {data.avaragevll}, {data.avaragecurrent}, {data.totkw}, {data.totkva}, {data.totkvar}, {data.runhr}, '{get_current_date()}', '{get_current_time()}', '{current_datetime}'"
+
+        value = f"{client_id}, {device_id}, '{device}', {data.CH},{data.TW}, {data.KWH1}, {data.KWH2}, {data.KWH3}, {data.R}, {data.Y}, {data.B}, {data.R_Y}, {data.Y_B}, {data.B_R}, {data.AMP1}, {data.AMP2}, {data.AMP3}, {data.KW1}, {data.KW2}, {data.KW3}, {data.KVA1}, {data.KVA2}, {data.KVA3}, {data.PF1}, {data.PF2}, {data.PF3}, {data.FREQ}, {data.KVAR1}, {data.KVAR2}, {data.KVAR3}, {data.AVGVLN}, {data.AVGVLL}, {data.AVGAMP}, {data.TOTKW}, {data.TOTKVA}, {data.TOTKVAR}, {data.RUNHR}, '{get_current_date()}', '{get_current_time()}', '{current_datetime}'"
+        
+        print("value",value)
         energy_data_id = insert_data("td_energy_data", columns, value)
         
         
@@ -30,11 +42,11 @@ async def get_energy_data(data,client_id,device):
             raise ValueError("energy data was not inserted")
         else:
             # from routes.api_client_routes import SendEnergySocket
-            # lastdata=await SendEnergySocket.send_last_energy_data(data.client_id, data.device_id, data.device)
-            lastdata=await send_last_energy_data(client_id, data.device_id,device)
+            # lastdata=await SendEnergySocket.send_last_energy_data(data.client_id, device_id, data.device)
+            lastdata=await send_last_energy_data(client_id, device_id,device)
             if lastdata is None:
                 raise ValueError("Could not fetch data")
-            user_data = {"energy_data_id":energy_data_id, "device_id": data.device_id, "device": device, "do_channel": data.do_channel}
+            user_data = {"energy_data_id":energy_data_id, "device_id": device_id, "device": device, "do_channel": data.CH}
         return user_data
     except Exception as e:
         raise ValueError("Could not fetch data",e)
@@ -63,7 +75,7 @@ async def send_last_energy_data(client_id, device_id, device):
                                 td.b, 
                                 td.r_y, 
                                 td.y_b, 
-                                td.b_y, 
+                                td.b_r, 
                                 td.curr1, 
                                 td.curr2, 
                                 td.curr3, 
@@ -112,8 +124,6 @@ async def send_last_energy_data(client_id, device_id, device):
             background_tasks.add_task(AlertLibrary.send_alert, client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
 
             await sennd_ws_message("EMS",client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
-            
-            print("lastdata last energy data>>>>>>>>>>/////////>>>>>>>>>>",json.dumps(lastdata, cls=DecimalEncoder))
             return json.dumps(lastdata, cls=DecimalEncoder)
         except Exception as e:
             raise ValueError("Could not fetch data",e)
