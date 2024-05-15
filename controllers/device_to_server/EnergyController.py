@@ -5,7 +5,8 @@ from Library.DecimalEncoder import DecimalEncoder
 from Library import AlertLibrary
 import json
 from models import device_data_model
-from utils.week_date import weekdays_date
+# from utils.week_date import weekdays_date
+from datetime import datetime
 
 
 
@@ -19,10 +20,18 @@ async def get_energy_data(data:device_data_model.EnergyDeviceData,client_id,devi
         
         device_id=device_data["device_id"]
         current_datetime = get_current_datetime()
+      
+        date_obj = datetime.strptime(data.DT, "%y%m%d")
+        formatted_date = date_obj.strftime("%Y-%m-%d")
+        
+        time_obj = datetime.strptime(data.TIME, "%H%M%S")
+        formatted_time = time_obj.strftime("%H:%M:%S")
+        
+        
         columns = "client_id, device_id, device, do_channel,tw,e1, e2, e3, r, y, b, r_y, y_b, b_r, curr1, curr2, curr3, activep1, activep2, activep3, apparentp1, apparentp2, apparentp3, pf1, pf2, pf3, freq, reactvp1, reactvp2, reactvp3, avaragevln, avaragevll, avaragecurrent, totkw, totkva, totkvar, runhr, date, time, created_at"
         # value = f"{client_id}, {device_id}, '{device}', {data.CH}, {data.KWH1}, {data.KWH2}, {data.KWH3}, {data.R}, {data.Y}, {data.B}, {data.R_Y}, {data.Y_B}, {data.B_R}, {data.curr1}, {data.curr2}, {data.curr3}, {data.activep1}, {data.activep2}, {data.activep3}, {data.apparentp1}, {data.apparentp2}, {data.apparentp3}, {data.pf1}, {data.pf2}, {data.pf3}, {data.freq}, {data.reactvp1}, {data.reactvp2}, {data.reactvp3}, {data.avaragevln}, {data.avaragevll}, {data.avaragecurrent}, {data.totkw}, {data.totkva}, {data.totkvar}, {data.runhr}, '{get_current_date()}', '{get_current_time()}', '{current_datetime}'"
 
-        value = f"{client_id}, {device_id}, '{device}', {data.CH},{data.TW}, {data.KWH1}, {data.KWH2}, {data.KWH3}, {data.R}, {data.Y}, {data.B}, {data.R_Y}, {data.Y_B}, {data.B_R}, {data.AMP1}, {data.AMP2}, {data.AMP3}, {data.KW1}, {data.KW2}, {data.KW3}, {data.KVA1}, {data.KVA2}, {data.KVA3}, {data.PF1}, {data.PF2}, {data.PF3}, {data.FREQ}, {data.KVAR1}, {data.KVAR2}, {data.KVAR3}, {data.AVGVLN}, {data.AVGVLL}, {data.AVGAMP}, {data.TOTKW}, {data.TOTKVA}, {data.TOTKVAR}, {data.RUNHR}, '{get_current_date()}', '{get_current_time()}', '{current_datetime}'"
+        value = f"{client_id}, {device_id}, '{device}', {data.CH},{data.TW}, {data.KWH1}, {data.KWH2}, {data.KWH3}, {data.R}, {data.Y}, {data.B}, {data.R_Y}, {data.Y_B}, {data.B_R}, {data.AMP1}, {data.AMP2}, {data.AMP3}, {data.KW1}, {data.KW2}, {data.KW3}, {data.KVA1}, {data.KVA2}, {data.KVA3}, {data.PF1}, {data.PF2}, {data.PF3}, {data.FREQ}, {data.KVAR1}, {data.KVAR2}, {data.KVAR3}, {data.AVGVLN}, {data.AVGVLL}, {data.AVGAMP}, {data.TOTKW}, {data.TOTKVA}, {data.TOTKVAR}, {data.RUNHR}, '{formatted_date}', '{formatted_time}', '{current_datetime}'"
         
         print("value",value)
         energy_data_id = insert_data("td_energy_data", columns, value)
