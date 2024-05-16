@@ -1,4 +1,4 @@
-from db_model.MASTER_MODEL import select_data,update_data,select_one_data,batch_insert_data
+from db_model.MASTER_MODEL import select_data,update_data,select_one_data,batch_insert_data,insert_data
 from utils.date_time_format import get_current_datetime, get_current_date_time_utc
 
 
@@ -170,5 +170,63 @@ async def total_power_analisis(params):
         select="energy_data_id, device_id, do_channel, totkw, totkva, totkvar, runhr, DATE_FORMAT(date, '%Y-%m-%d') AS date, TIME_FORMAT(time, '%H:%i:%s') AS time, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at, DATE_FORMAT(updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at"
         data = select_data("td_energy_data",select, condition,order_by="energy_data_id DESC")
         return data
+    except Exception as e:
+        raise e
+    
+
+
+@staticmethod
+async def organization_settings(client_id,user_id,params):
+    try:
+
+        
+        #  column="client_id, device, device_name, do_channel, model, lat, lon, imei_no, device_type, meter_type, last_maintenance, created_at"
+        
+        # rows_data = []
+        # for params_data in params:
+        #     row_data = {
+        #         "client_id": params_data.client_id,
+        #         "device": params_data.device,
+        #         "device_name": params_data.device_name,
+        #         "do_channel": params_data.do_channel,
+        #         "model": params_data.model,
+        #         "lat": params_data.lat,
+        #         "lon": params_data.lon,
+        #         "imei_no": params_data.imei_no,
+        #         "device_type": params_data.device_type,
+        #         "meter_type": params_data.meter_type,
+        #         "last_maintenance": params_data.last_maintenance,
+        #         "created_at": get_current_datetime()  # Assuming get_current_datetime() returns the current datetime
+        #     }
+        #     rows_data.append(row_data)        
+        # batch_dataid=batch_insert_data("md_device", column, rows_data)
+        # print("batch_dataid---------------------", batch_dataid)
+        # return batch_dataid
+
+        
+        rows_data = []
+        for params_data in params.billing_data:
+            row_data = {
+                "client_id":params.client_id,
+                "organization_id":params.organization_id,
+                "billing_type":params_data.billing_type,
+                "billing_price":params_data.billing_price,
+                "billing_status":"Y",
+                "billing_day":params_data.billing_day,
+                "created_by":user_id,
+                "created_at":get_current_datetime()
+            }
+            rows_data.append(row_data)
+        column="client_id, organization_id, billing_type, billing_price, billing_status, billing_day, created_by, created_at"
+        batch_dataid=batch_insert_data("md_billing_organization", column, rows_data)
+        
+        
+        columndata="organization_id, client_id, countries_id, states_id, regions_id, subregions_id, cities_id, address, create_by, created_at"
+        insdata=f"{params.organization_id}, {params.client_id}, {params.countries_id}, {params.states_id}, {params.regions_id}, {params.subregions_id}, {params.cities_id}, '{params.address}', {user_id}, '{get_current_datetime()}'"
+        st_view_organization=insert_data("st_view_organization",columndata,insdata)
+    
+    
+        res={"billing_data":batch_dataid,"settings_organization":st_view_organization}
+        return res
     except Exception as e:
         raise e

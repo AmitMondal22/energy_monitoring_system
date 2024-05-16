@@ -1,29 +1,23 @@
 from fastapi import APIRouter, HTTPException, Response,WebSocket,WebSocketDisconnect,Depends,Request
 
 from controllers.admin import ClientController, ManageUserController, DeviceManageUserController,DeviceController
-
 from controllers.unit import UnitController
 from controllers.alert import AlertController
 
 from models.organization_model import AddOrganization, EditOrganization, DeleteOrganization,ListOrganization
 from models.manage_user_model import AddUser, EditUser,DeleteUser,UserDeviceAdd,UserDeviceEdit,UserDeviceDelete,ListUsers,UserInfo,ClientId,DeviceInfo
+from models.device_data_model import EnergyData,AddAlert,DeviceAdd,DeviceEdit,EditAlert,DeleteAlert,EnergyUsed, VoltageData,OrganizationSettings
 
-
-
-from models.device_data_model import EnergyData,AddAlert,DeviceAdd,DeviceEdit,EditAlert,DeleteAlert,EnergyUsed, VoltageData
 from Library.DecimalEncoder import DecimalEncoder
 from Library.CustomEncoder import CustomEncoder
+from Library import EmailLibrary
+from Library.WsConnectionManager import WsConnectionManager
+
 from db_model.MASTER_MODEL import select_one_data
 
 from middleware.MyMiddleware import mw_client,mw_user,mw_user_client
 
-
-
-from Library import EmailLibrary
-
-from Library.WsConnectionManager import WsConnectionManager
 from utils.response import errorResponse, successResponse
-
 from typing import List
 import json
 
@@ -555,4 +549,24 @@ async def delete_alert(request: Request,params:DeleteAlert):
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
         # For any other unexpected error, return a 500 Internal Server Error
+        raise HTTPException(status_code=500, detail="Internal server error")
+    
+    
+    
+# ====================================================================================
+# ====================================================================================
+
+
+@api_client_routes.post("/organization_settings", dependencies=[Depends(mw_client)])
+async def organization_settings(request: Request,params:List[OrganizationSettings]):
+    try:
+        userdata=request.state.user_data
+        client_id=userdata["client_id"]
+        user_id=userdata["user_id"]
+        data = await DeviceController.organization_settings(client_id,user_id,params)
+        resdata = successResponse(data, message="Organization settings")
+        return Response(content=json.dumps(resdata), media_type="application/json", status_code=200)
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
         raise HTTPException(status_code=500, detail="Internal server error")

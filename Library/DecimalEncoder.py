@@ -13,6 +13,9 @@ class DecimalEncoder(json.JSONEncoder):
         elif isinstance(o, timedelta):
             return str(o)
         return super().default(o)
+    
+    
+    
 
 
 

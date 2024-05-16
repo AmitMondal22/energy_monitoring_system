@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field, constr, validator
 from datetime import date,datetime,time
 import re
-from typing import Optional
+from typing import Optional,List
 
 
 class EnergyDeviceData(BaseModel):
@@ -287,3 +287,22 @@ class WsDeviceData(BaseModel):
     client_id: int
     device_id: int
     device: str
+    
+
+class BllingData(BaseModel):
+    billing_type: str
+    billing_price: float
+    billing_status: str
+    billing_day: int
+
+class OrganizationSettings(BaseModel):
+    organization_id: int
+    client_id: int
+    countries_id: int
+    states_id: int
+    regions_id: int
+    subregions_id: int
+    cities_id: int
+    address: str
+    created_by: int
+    billing_data: List[BllingData]
