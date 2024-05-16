@@ -237,15 +237,15 @@ class DeviceAdd(BaseModel):
     meter_type: str
     last_maintenance: date
     @validator('meter_type')
-    def validate_alert_status(cls, v):
-        valid_alert_status = {"ENSF", "ENTF"}
-        if v not in valid_alert_status:
+    def validate_meter_type(cls, v):
+        validate_meter_type = {"ENSF", "ENTF"}
+        if v not in validate_meter_type:
             raise ValueError('Invalid alert status')
         return v
     @validator('device_type')
-    def validate_alert_status(cls, v):
-        valid_alert_status = {"EN", "UPS"}
-        if v not in valid_alert_status:
+    def validate_device_type(cls, v):
+        valid_device_type = {"EN", "UPS"}
+        if v not in valid_device_type:
             raise ValueError('Invalid alert status')
         return v
 
@@ -262,15 +262,15 @@ class DeviceEdit(BaseModel):
     device_type: str
     meter_type: str
     @validator('meter_type')
-    def validate_alert_status(cls, v):
-        valid_alert_status = {"ENSF", "ENTF"}
-        if v not in valid_alert_status:
+    def validate_meter_type(cls, v):
+        valid_meter_type = {"ENSF", "ENTF"}
+        if v not in valid_meter_type:
             raise ValueError('Invalid alert status')
         return v
     @validator('device_type')
-    def validate_alert_status(cls, v):
-        valid_alert_status = {"EN", "UPS"}
-        if v not in valid_alert_status:
+    def validate_device_type(cls, v):
+        valid_device_type = {"EN", "UPS"}
+        if v not in valid_device_type:
             raise ValueError('Invalid alert status')
         return v
     
