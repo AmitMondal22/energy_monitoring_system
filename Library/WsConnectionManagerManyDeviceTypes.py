@@ -58,6 +58,7 @@ class WsConnectionManagerManyDeviceTypes:
         print("activity connections///////////////",user_id)
         if user_id in self.active_connections:
             print("active connections",self.active_connections)
+            print("active connections",type(self.active_connections[user_id]))
             for websocket in self.active_connections[user_id]:
                 print("active connections",self.active_connections[user_id])
                 print("message",message)
