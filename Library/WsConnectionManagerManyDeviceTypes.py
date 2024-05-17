@@ -53,26 +53,14 @@ class WsConnectionManagerManyDeviceTypes:
 
 
 
+
     async def send_personal_message(self, data_type:str, client_id: str, device_id: str, device: str, message: str):
         user_id = f"{data_type}-{client_id}-{device_id}-{device}"
-        print("activity connections///////////////",user_id)
         if user_id in self.active_connections:
-            print("active connections",self.active_connections)
-            print("active connections",self.active_connections[user_id])
-            print("active connections",type(self.active_connections[user_id]))
             for websocket in self.active_connections[user_id]:
-                print("active connections",self.active_connections[user_id])
-                print("message",message)
-                print("message",type(websocket))
                 await websocket.send_text(message)
         else:
-            print("user_id not in active_connections")
-            
-    async def broadcast(self, message: str):
-        """Broadcast message to all active connections"""
-        for connection in self.active_connections.values():
-            for websocket in connection:
-                await websocket.send_text(message)
+            print("User not in active_connections")
 
     # async def send_one_time_message(self, client_id, device_id, device):
     #     await EnergyController.send_last_energy_data(client_id, device_id, device)
