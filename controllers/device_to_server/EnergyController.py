@@ -21,7 +21,7 @@ async def get_energy_data(data:device_data_model.EnergyDeviceData,client_id,devi
         device_id=device_data["device_id"]
         current_datetime = get_current_datetime()
       
-        date_obj = datetime.strptime(data.DT, "%y%m%d")
+        date_obj = datetime.strptime(data.DT, "%d%m%y")
         formatted_date = date_obj.strftime("%Y-%m-%d")
         
         time_obj = datetime.strptime(data.TIME, "%H%M%S")
