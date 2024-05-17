@@ -43,6 +43,8 @@ def select_one_data(table: str, select: Optional[str] = None, condition: Optiona
             total_query += f" WHERE {condition}"
         if order_by:
             total_query += f" ORDER BY {order_by}"
+            
+        total_query += f" LIMIT 1"
         
         conne = connect()  # Assuming connect() is defined somewhere to create a database connection
         cursor = conne.cursor()
@@ -75,6 +77,7 @@ def select_last_data(table: str, select: Optional[str] = None, condition: Option
             total_query += f" WHERE {condition}"
         if order_by:
             total_query += f" ORDER BY {order_by} DESC LIMIT 1"
+        total_query += f" LIMIT 1"
         conne = connect()
         cursor = conne.cursor()
         cursor.execute(total_query)
