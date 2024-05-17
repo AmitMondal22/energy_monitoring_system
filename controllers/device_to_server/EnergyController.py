@@ -172,10 +172,11 @@ async def send_last_energy_data(client_id, device_id, device):
             
             # lastdata_weekdata=custom_select_sql_query(custom_sql2,None)
             # print("Last data",lastdata_weekdata)
-            
             background_tasks.add_task(AlertLibrary.send_alert, client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
             print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-            await sennd_ws_message("EMS",client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
+            
+            await manager.send_personal_message("EMS",client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
+            # await sennd_ws_message("EMS",client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
             return json.dumps(lastdata, cls=DecimalEncoder)
         except Exception as e:
             raise ValueError("Could not fetch data",e)
