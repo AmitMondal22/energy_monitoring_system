@@ -516,7 +516,7 @@ async def add_alert(request: Request,alert:List[AddAlert]):
         # For any other unexpected error, return a 500 Internal Server Error
         raise HTTPException(status_code=500, detail="Internal server error")
 
-@api_client_routes.post("/alert/list", dependencies=[Depends(mw_client)])
+@api_client_routes.post("/alert/list", dependencies=[Depends(mw_user_client)])
 async def list_alert(request: Request,params:ClientId):
     try:
         user_data=request.state.user_data
