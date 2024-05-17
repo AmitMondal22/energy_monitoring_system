@@ -60,6 +60,8 @@ class WsConnectionManagerManyDeviceTypes:
             print("active connections",self.active_connections)
             for websocket in self.active_connections[user_id]:
                 print("active connections",self.active_connections[user_id])
+                print("message",message)
+                print("message",type(message))
                 await websocket.send_text(message)
         else:
             print("user_id not in active_connections")
