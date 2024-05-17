@@ -3,6 +3,7 @@ from utils.has_password import get_password_hash, verify_password
 from utils.otp import generate_otp
 from utils.date_time_format import get_current_datetime
 from utils.jwt_access import create_access_token
+from fastapi import HTTPException
 
 
 
@@ -102,7 +103,8 @@ async def login(user) -> dict:
         # Fetch initial user info
         user_info = select_one_data("users", base_select, base_condition, None)
         
-        if user_info is None:
+      
+        if user_info is None or not user_info:
             raise ValueError("User not found")
         
         # Prepare select fields and joins based on user type

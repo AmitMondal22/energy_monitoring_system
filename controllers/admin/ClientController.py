@@ -19,10 +19,14 @@ def add_organization(organization):
         raise e
     
 @staticmethod
-def list_organization(params):
+def list_organization(params,user_data):
     try:
+        if user_data["user_type"]=='U' or user_data["user_type"]=='O':
+            condition =f"client_id = {user_data['client_id']} AND organization_id = {user_data['organization_id']}"
+        elif user_data["user_type"]=='C':
+            condition =f"client_id = {user_data['client_id']}"
+            
         select="client_id,organization_id, organization_name, created_by, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at"
-        condition =f"client_id = {params.client_id}"
         data = select_data("md_organization", select,condition)
         return data
     except Exception as e:

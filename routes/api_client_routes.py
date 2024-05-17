@@ -132,11 +132,12 @@ async def add_organization(request: Request,organization:AddOrganization):
     
     
     
-@api_client_routes.post("/manage_organization/list", dependencies=[Depends(mw_client)])
+@api_client_routes.post("/manage_organization/list", dependencies=[Depends(mw_user_client)])
 async def list_organization(request: Request,params:ListOrganization):
     try:
         # print(params)
-        data = ClientController.list_organization(params)
+        user_data=request.state.user_data
+        data = ClientController.list_organization(params,user_data)
         resdata = successResponse(data, message="List of organizations")
         return Response(content=json.dumps(resdata), media_type="application/json", status_code=200)
     except ValueError as ve:
@@ -331,10 +332,11 @@ async def list_device(request: Request):
     
     
     
-@api_client_routes.post("/devices/device_info", dependencies=[Depends(mw_client)])
+@api_client_routes.post("/devices/device_info", dependencies=[Depends(mw_user_client)])
 async def list_device(request: Request,params:DeviceInfo):
     try:
-        data = await DeviceController.device_info(params)
+        userdata=request.state.user_data
+        data = await DeviceController.device_info(params,userdata)
         resdata = successResponse(data, message="List of devices")
         return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
     except ValueError as ve:
@@ -386,7 +388,7 @@ async def list_device(request: Request,params:ClientId):
 
 # =================================================================================================
 # =================================================================================================
-@api_client_routes.post("/devices/energy_data", dependencies=[Depends(mw_client)])
+@api_client_routes.post("/devices/energy_data", dependencies=[Depends(mw_user_client)])
 async def energy_data(request: Request,params:EnergyData):
     try:
         data = ClientController.energy_data(params)
@@ -403,10 +405,11 @@ async def energy_data(request: Request,params:EnergyData):
     
     
     
-@api_client_routes.post("/devices/graphical_view/energy_used", dependencies=[Depends(mw_client)])
+@api_client_routes.post("/devices/graphical_view/energy_used", dependencies=[Depends(mw_user_client)])
 async def energy_used(request: Request,params:EnergyUsed):
     try:
-        data = await DeviceController.energy_used(params)
+        user_data=request.state.user_data
+        data = await DeviceController.energy_used(params,user_data)
         resdata = successResponse(data, message="energy used Data")
         return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
     except ValueError as ve:
@@ -416,10 +419,11 @@ async def energy_used(request: Request,params:EnergyUsed):
     
 
 
-@api_client_routes.post("/devices/graphical_view/voltage", dependencies=[Depends(mw_client)])
+@api_client_routes.post("/devices/graphical_view/voltage", dependencies=[Depends(mw_user_client)])
 async def voltage_data(request: Request,params:VoltageData):
     try:
-        data = await DeviceController.voltage_data(params)
+        user_data=request.state.user_data
+        data = await DeviceController.voltage_data(params,user_data)
         resdata = successResponse(data, message="Voltage Data")
         return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
     except ValueError as ve:
@@ -428,10 +432,11 @@ async def voltage_data(request: Request,params:VoltageData):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@api_client_routes.post("/devices/graphical_view/current", dependencies=[Depends(mw_client)])
+@api_client_routes.post("/devices/graphical_view/current", dependencies=[Depends(mw_user_client)])
 async def current_data(request: Request,params:VoltageData):
     try:
-        data = await DeviceController.current_data(params)
+        user_data=request.state.user_data
+        data = await DeviceController.current_data(params,user_data)
         resdata = successResponse(data, message="Current Data")
         return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
     except ValueError as ve:
@@ -440,10 +445,11 @@ async def current_data(request: Request,params:VoltageData):
         raise HTTPException(status_code=500, detail="Internal server error")
     
 
-@api_client_routes.post("/devices/graphical_view/power", dependencies=[Depends(mw_client)])
+@api_client_routes.post("/devices/graphical_view/power", dependencies=[Depends(mw_user_client)])
 async def power_data(request: Request,params:VoltageData):
     try:
-        data = await DeviceController.power_data(params)
+        user_data=request.state.user_data
+        data = await DeviceController.power_data(params,user_data)
         resdata = successResponse(data, message="Power Data")
         return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
     except ValueError as ve:
@@ -451,10 +457,11 @@ async def power_data(request: Request,params:VoltageData):
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal server error")
     
-@api_client_routes.post("/devices/graphical_view/total_power_analisis")
+@api_client_routes.post("/devices/graphical_view/total_power_analisis", dependencies=[Depends(mw_user_client)])
 async def  total_power_analisis(request: Request,params:VoltageData):
     try:
-        data = await DeviceController.total_power_analisis(params)
+        user_data=request.state.user_data
+        data = await DeviceController.total_power_analisis(params,user_data)
         resdata = successResponse(data, message="Total Power Analisis Data")
         return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
     except ValueError as ve:
@@ -480,7 +487,8 @@ async def  total_power_analisis(request: Request,params:VoltageData):
 
 
 
-@api_client_routes.post("/unit/list", dependencies=[Depends(mw_client)])
+# @api_client_routes.post("/unit/list", dependencies=[Depends(mw_client)])
+@api_client_routes.post("/unit/list")
 async def list_unit(request: Request):
     try:
         data = await UnitController.list_unit()
@@ -511,7 +519,8 @@ async def add_alert(request: Request,alert:List[AddAlert]):
 @api_client_routes.post("/alert/list", dependencies=[Depends(mw_client)])
 async def list_alert(request: Request,params:ClientId):
     try:
-        data = await AlertController.list_alert(params)
+        user_data=request.state.user_data
+        data = await AlertController.list_alert(params,user_data)
         resdata = successResponse(data, message="List of alerts")
         return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
     except ValueError as ve:
