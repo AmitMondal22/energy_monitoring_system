@@ -3,10 +3,12 @@ from fastapi import APIRouter, HTTPException, Response,WebSocket,WebSocketDiscon
 from controllers.admin import ClientController, ManageUserController, DeviceManageUserController,DeviceController
 from controllers.unit import UnitController
 from controllers.alert import AlertController
+from controllers.report import ReportAnalysisController
 
 from models.organization_model import AddOrganization, EditOrganization, DeleteOrganization,ListOrganization
 from models.manage_user_model import AddUser, EditUser,DeleteUser,UserDeviceAdd,UserDeviceEdit,UserDeviceDelete,ListUsers,UserInfo,ClientId,DeviceInfo
 from models.device_data_model import EnergyData,AddAlert,DeviceAdd,DeviceEdit,EditAlert,DeleteAlert,EnergyUsed, VoltageData,OrganizationSettings
+from models.report_model import EnergyUsageBilling
 
 from Library.DecimalEncoder import DecimalEncoder
 from Library.CustomEncoder import CustomEncoder
@@ -314,7 +316,7 @@ async def delete_user_device(request: Request,user:UserDeviceDelete):
 async def list_device(request: Request):
     try:
         user_credentials = request.state.user_data
-        client_id=user_credentials["client_id"]
+        client_id=user_credentials['client_id']
         if user_credentials["user_type"] == "U":
             user_id=user_credentials["user_id"]
             organization_id=user_credentials["organization_id"]
@@ -570,7 +572,7 @@ async def delete_alert(request: Request,params:DeleteAlert):
 async def organization_settings(request: Request,params:List[OrganizationSettings]):
     try:
         userdata=request.state.user_data
-        client_id=userdata["client_id"]
+        client_id=userdata['client_id']
         user_id=userdata["user_id"]
         data = await DeviceController.organization_settings(client_id,user_id,params)
         resdata = successResponse(data, message="Organization settings")
@@ -579,3 +581,23 @@ async def organization_settings(request: Request,params:List[OrganizationSetting
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal server error")
+    
+    
+    
+    
+# ====================================================================================
+# ====================================================================================
+
+
+@api_client_routes.post("/report_analysis/energy_usage_billing", dependencies=[Depends(mw_user_client)])
+async def energy_usage_billing(request: Request,params:EnergyUsageBilling):
+    try:
+        userdata=request.state.user_data
+        data = await ReportAnalysisController.energy_usage_billing(userdata,params)
+        resdata = successResponse(data, message="Organization settings")
+        return Response(content=json.dumps(resdata), media_type="application/json", status_code=200)
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
+    
