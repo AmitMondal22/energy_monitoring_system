@@ -110,7 +110,7 @@ async def energy_used(params,user_data):
     try:
        
         end_date_time=get_current_date_time_utc()
-        start_date_time=params.start_date_time
+        # start_date_time=params.start_date_time
        
         if params.type=="Y" :
             condition = f"client_id = {user_data['client_id']} AND device_id = {params.device_id} AND energy_data_id IN (SELECT MAX(energy_data_id) FROM  td_energy_data AS sub_ed WHERE YEAR(date) = YEAR(ed.date) AND MONTH(date) = MONTH(ed.date) GROUP BY YEAR(date),MONTH(date))"
