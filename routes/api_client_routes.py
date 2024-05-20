@@ -422,7 +422,7 @@ async def energy_used(request: Request,params:EnergyUsed):
 
 
 @api_client_routes.post("/devices/graphical_view/voltage", dependencies=[Depends(mw_user_client)])
-async def voltage_data(request: Request,params:VoltageData):
+async def voltage_data(request: Request,params:EnergyUsed):
     try:
         user_data=request.state.user_data
         data = await DeviceController.voltage_data(params,user_data)
@@ -435,7 +435,7 @@ async def voltage_data(request: Request,params:VoltageData):
 
 
 @api_client_routes.post("/devices/graphical_view/current", dependencies=[Depends(mw_user_client)])
-async def current_data(request: Request,params:VoltageData):
+async def current_data(request: Request,params:EnergyUsed):
     try:
         user_data=request.state.user_data
         data = await DeviceController.current_data(params,user_data)
@@ -448,7 +448,7 @@ async def current_data(request: Request,params:VoltageData):
     
 
 @api_client_routes.post("/devices/graphical_view/power", dependencies=[Depends(mw_user_client)])
-async def power_data(request: Request,params:VoltageData):
+async def power_data(request: Request,params:EnergyUsed):
     try:
         user_data=request.state.user_data
         data = await DeviceController.power_data(params,user_data)
@@ -460,7 +460,7 @@ async def power_data(request: Request,params:VoltageData):
         raise HTTPException(status_code=500, detail="Internal server error")
     
 @api_client_routes.post("/devices/graphical_view/total_power_analisis", dependencies=[Depends(mw_user_client)])
-async def  total_power_analisis(request: Request,params:VoltageData):
+async def  total_power_analisis(request: Request,params:EnergyUsed):
     try:
         user_data=request.state.user_data
         data = await DeviceController.total_power_analisis(params,user_data)
