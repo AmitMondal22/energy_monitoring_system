@@ -370,3 +370,13 @@ async def organization_settings(client_id,user_id,params):
         return res
     except Exception as e:
         raise e
+    
+@staticmethod
+async def organization_settings_list(client_id,user_id,params):
+    try:
+        condition = f"st_org.client_id = sb_org.client_id AND st_org.organization_id = sb_org.organization_id AND st_org.client_id = {client_id} AND sb_org.client_id = {client_id}  AND st_org.organization_id = {params.organization_id} AND sb_org.organization_id = {params.organization_id} AND sb_org.billing_status ='Y'"
+        select="st_org.organization_id, st_org.client_id, st_org.countries_id, st_org.states_id, st_org.regions_id, st_org.subregions_id, st_org.cities_id, st_org.address, DATE_FORMAT(st_org.created_at, '%Y-%m-%d %H:%i:%s') AS created_at, sb_org.billing_id, sb_org.billing_type, sb_org.billing_price, sb_org.billing_status, sb_org.billing_day, DATE_FORMAT(sb_org.created_at, '%Y-%m-%d %H:%i:%s') AS billing_created_at"
+        data = select_data("md_billing_organization AS st_org, md_billing_organization AS sb_org",select, condition)
+        return data
+    except Exception as e:
+        raise e

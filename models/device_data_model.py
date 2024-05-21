@@ -306,3 +306,6 @@ class OrganizationSettings(BaseModel):
     address: str
     created_by: int
     billing_data: List[BllingData]
+    
+class OrganizationSettingsList(BaseModel):
+    organization_id: int

@@ -7,7 +7,7 @@ from controllers.report import ReportAnalysisController
 
 from models.organization_model import AddOrganization, EditOrganization, DeleteOrganization,ListOrganization
 from models.manage_user_model import AddUser, EditUser,DeleteUser,UserDeviceAdd,UserDeviceEdit,UserDeviceDelete,ListUsers,UserInfo,ClientId,DeviceInfo
-from models.device_data_model import EnergyData,AddAlert,DeviceAdd,DeviceEdit,EditAlert,DeleteAlert,EnergyUsed, VoltageData,OrganizationSettings
+from models.device_data_model import EnergyData,AddAlert,DeviceAdd,DeviceEdit,EditAlert,DeleteAlert,EnergyUsed, VoltageData,OrganizationSettings,OrganizationSettingsList
 from models.report_model import EnergyUsageBilling
 
 from Library.DecimalEncoder import DecimalEncoder
@@ -575,6 +575,20 @@ async def organization_settings(request: Request,params:List[OrganizationSetting
         client_id=userdata['client_id']
         user_id=userdata["user_id"]
         data = await DeviceController.organization_settings(client_id,user_id,params)
+        resdata = successResponse(data, message="Organization settings")
+        return Response(content=json.dumps(resdata), media_type="application/json", status_code=200)
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
+    
+@api_client_routes.post("/organization_settings/list", dependencies=[Depends(mw_client)])
+async def organization_settings(request: Request,params:OrganizationSettingsList):
+    try:
+        userdata=request.state.user_data
+        client_id=userdata['client_id']
+        user_id=userdata["user_id"]
+        data = await DeviceController.organization_settings_list(client_id,user_id,params)
         resdata = successResponse(data, message="Organization settings")
         return Response(content=json.dumps(resdata), media_type="application/json", status_code=200)
     except ValueError as ve:

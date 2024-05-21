@@ -32,10 +32,11 @@ async def get_sub_regions(region_id: Optional[int] = Query(None, description="Th
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal server error")
     
-@api_common_routes.get("/location/countries", dependencies=[Depends(mw_auth)])
+@api_common_routes.get("/location/countries")
+# @api_common_routes.get("/location/countries", dependencies=[Depends(mw_auth)])
 async def get_countries(sub_region_id: Optional[int] = Query(None, description="The sub region id to get"),region_id: Optional[int] = Query(None, description="The region id to get"),):
     try :
-        data = await LocationController.countries_list(region_id,sub_region_id)
+        data = await LocationController.countries_list(sub_region_id,region_id)
         resdata = successResponse(data, message="List of countries")
         return Response(content=json.dumps(resdata, cls=DecimalEncoder), media_type="application/json", status_code=200)
     except ValueError as ve:

@@ -9,6 +9,7 @@ class EnergyUsageBilling(BaseModel):
     device_id: int
     start_date_time: str
     end_date_time: Optional[str]
+    
     @validator('report_type')
     def validate_report_type(cls, v):
         valid_report_type = {"M", "Y", "C"}
