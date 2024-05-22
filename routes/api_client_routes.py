@@ -609,7 +609,8 @@ async def energy_usage_billing(request: Request,params:EnergyUsageBilling):
         userdata=request.state.user_data
         data = await ReportAnalysisController.energy_usage_billing(userdata,params)
         resdata = successResponse(data, message="Organization settings")
-        return Response(content=json.dumps(resdata), media_type="application/json", status_code=200)
+        print(resdata)
+        return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
