@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, constr, validator
+from pydantic import BaseModel, Field, constr, validator,EmailStr
 from datetime import date
 
 class Register(BaseModel):
@@ -27,5 +27,12 @@ class Register(BaseModel):
 
 
 class Login(BaseModel):
-    email: str
+    email: EmailStr
     password: str
+    
+    @validator('email')
+    def check_no_sql_injection(cls, v):
+        forbidden_characters = ["'", "\"", ";", "--"]
+        if any(char in v for char in forbidden_characters):
+            raise ValueError("Invalid input")
+        return v

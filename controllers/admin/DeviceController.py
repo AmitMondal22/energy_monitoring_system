@@ -363,7 +363,7 @@ async def organization_settings(client_id,user_id,params):
         
         columndata="organization_id, client_id, countries_id, states_id, regions_id, subregions_id, cities_id, address, create_by, created_at"
         insdata=f"{params.organization_id}, {params.client_id}, {params.countries_id}, {params.states_id}, {params.regions_id}, {params.subregions_id}, {params.cities_id}, '{params.address}', {user_id}, '{get_current_datetime()}'"
-        st_view_organization=insert_data("st_view_organization",columndata,insdata)
+        st_view_organization=insert_data("st_ms_organization",columndata,insdata)
     
     
         res={"billing_data":batch_dataid,"settings_organization":st_view_organization}

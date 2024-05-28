@@ -569,14 +569,14 @@ async def delete_alert(request: Request,params:DeleteAlert):
 
 
 @api_client_routes.post("/organization_settings", dependencies=[Depends(mw_client)])
-async def organization_settings(request: Request,params:List[OrganizationSettings]):
+async def organization_settings(request: Request,params:OrganizationSettings):
     try:
         userdata=request.state.user_data
         client_id=userdata['client_id']
         user_id=userdata["user_id"]
         data = await DeviceController.organization_settings(client_id,user_id,params)
         resdata = successResponse(data, message="Organization settings")
-        return Response(content=json.dumps(resdata), media_type="application/json", status_code=200)
+        return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
