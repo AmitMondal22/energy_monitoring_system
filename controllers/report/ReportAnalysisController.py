@@ -21,7 +21,7 @@ async def energy_usage_billing(user_data,params):
                                         td_energy_data
                                     WHERE
                                         client_id = {user_data['client_id']} AND device_id = {params.device_id}
-                                        AND date BETWEEN {fdatetdate["first_day"]} AND {fdatetdate["last_day"]}
+                                        AND date BETWEEN '{fdatetdate["first_day"]}' AND '{fdatetdate["last_day"]}'
                                     GROUP BY
                                         date
                                 ) AS sub_ed ON ed.date = sub_ed.date AND ed.time = sub_ed.max_time"""
@@ -52,7 +52,7 @@ async def energy_usage_billing(user_data,params):
                                         td_energy_data
                                     WHERE
                                         client_id = 1 AND device_id = 1
-                                        AND date BETWEEN {fdatetdate["first_day"]} AND {fdatetdate["last_day"]}
+                                        AND date BETWEEN '{fdatetdate["first_day"]}' AND '{fdatetdate["last_day"]}'
                                     GROUP BY
                                         YEAR(DATE),
                                         MONTH(DATE)
@@ -72,7 +72,7 @@ async def energy_usage_billing(user_data,params):
                                         td_energy_data
                                     WHERE
                                         client_id = {user_data['client_id']} AND device_id = {params.device_id}
-                                        AND date BETWEEN {params.start_date_time} AND {params.end_date_time}
+                                        AND date BETWEEN '{params.start_date_time}' AND '{params.end_date_time}'
                                     GROUP BY
                                         date
                                 ) AS sub_ed ON ed.date = sub_ed.date AND ed.time = sub_ed.max_time"""
