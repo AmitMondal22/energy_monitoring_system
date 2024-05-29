@@ -39,8 +39,8 @@ async def energy_usage_billing(user_data,params):
                             ed .e1,
                             ed .e2,
                             ed .e3,
-                            DATE_FORMAT(ed.date, '%Y-%m-%d') AS DATE,
-                            TIME_FORMAT(ed.time, '%H:%i:%s') AS TIME"""
+                            DATE_FORMAT(ed.date, '%Y-%m-%d') AS date,
+                            TIME_FORMAT(ed.time, '%H:%i:%s') AS time"""
                             
                 table =f""" td_energy_data AS ed
                                 INNER JOIN(
