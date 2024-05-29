@@ -82,7 +82,7 @@ async def energy_usage_billing(user_data,params):
           
         condition_bill = f"a.organization_id=b.organization_id AND a.client_id = {user_data['client_id']} AND b.client_id={user_data['client_id']} AND a.device_id = {params.device_id}"
         select_bill = "b.*"
-        master_bill = select_data("md_manage_user_device AS a,md_billing_organization AS b",select_bill, condition_bill)
+        master_bill = select_one_data("md_manage_user_device AS a,md_billing_organization AS b",select_bill, condition_bill)
         return {"data":data , "master_bill":master_bill}
     except Exception as e:
         return ValueError("Error in energy_usage_billing",e)
