@@ -11,7 +11,7 @@ async def energy_usage_billing(user_data,params):
                 fdatetdate=first_day_last_day(params.start_date_time)
                 print("??????????????-----------------???????",fdatetdate["first_day"])
                 condition = f"ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id}"
-                select="ed.energy_data_id, ed.device_id, ed.do_channel, ed.activep1, ed.activep2, ed.activep3, ed.apparentp1, ed.apparentp2, ed.apparentp3, ed.pf1, ed.pf2, ed.pf3, DATE_FORMAT(ed.date, '%Y-%m-%d') AS date, TIME_FORMAT(ed.time, '%H:%i:%s') AS time"
+                select="ed.e1,ed.e2,ed.e3,ed.energy_data_id, ed.device_id, ed.do_channel, ed.activep1, ed.activep2, ed.activep3, ed.apparentp1, ed.apparentp2, ed.apparentp3, ed.pf1, ed.pf2, ed.pf3, DATE_FORMAT(ed.date, '%Y-%m-%d') AS date, TIME_FORMAT(ed.time, '%H:%i:%s') AS time"
                 table=f"""td_energy_data AS ed
                                 INNER JOIN (
                                     SELECT
@@ -62,7 +62,7 @@ async def energy_usage_billing(user_data,params):
                 data = select_data(table,select, condition,order_by="ed.date DESC, ed.time DESC")
             elif params.report_type == "C": # customized
                 condition = f"ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id}"
-                select="ed.energy_data_id, ed.device_id, ed.do_channel, ed.activep1, ed.activep2, ed.activep3, ed.apparentp1, ed.apparentp2, ed.apparentp3, ed.pf1, ed.pf2, ed.pf3, DATE_FORMAT(ed.date, '%Y-%m-%d') AS date, TIME_FORMAT(ed.time, '%H:%i:%s') AS time"
+                select="ed.e1,ed.e2,ed.e3,ed.energy_data_id, ed.device_id, ed.do_channel, ed.activep1, ed.activep2, ed.activep3, ed.apparentp1, ed.apparentp2, ed.apparentp3, ed.pf1, ed.pf2, ed.pf3, DATE_FORMAT(ed.date, '%Y-%m-%d') AS date, TIME_FORMAT(ed.time, '%H:%i:%s') AS time"
                 table=f"""td_energy_data AS ed
                                 INNER JOIN (
                                     SELECT

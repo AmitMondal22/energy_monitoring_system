@@ -374,9 +374,20 @@ async def organization_settings(client_id,user_id,params):
 @staticmethod
 async def organization_settings_list(client_id,user_id,params):
     try:
-        condition = f"st_org.client_id = sb_org.client_id AND st_org.organization_id = sb_org.organization_id AND st_org.client_id = {client_id} AND sb_org.client_id = {client_id}  AND st_org.organization_id = {params.organization_id} AND sb_org.organization_id = {params.organization_id} AND sb_org.billing_status ='Y'"
-        select="st_org.organization_id, st_org.client_id, st_org.countries_id, st_org.states_id, st_org.regions_id, st_org.subregions_id, st_org.cities_id, st_org.address, DATE_FORMAT(st_org.created_at, '%Y-%m-%d %H:%i:%s') AS created_at, sb_org.billing_organization, sb_org.billing_type, sb_org.billing_price, sb_org.billing_status, sb_org.billing_day, DATE_FORMAT(sb_org.created_at, '%Y-%m-%d %H:%i:%s') AS billing_created_at"
-        data = select_data("st_ms_organization AS st_org, md_billing_organization AS sb_org",select, condition)
+        condition = f"""st_org.client_id = sb_org.client_id 
+                        AND st_org.organization_id = sb_org.organization_id 
+                        AND st_org.cities_id = mlc.id
+                        AND st_org.states_id = mls.id
+                        AND st_org.countries_id = mlco.id
+                        AND st_org.regions_id = mlr.id
+                        AND st_org.subregions_id = mlsr.id
+                        AND st_org.client_id = {client_id} 
+                        AND sb_org.client_id = {client_id}  AND st_org.organization_id = {params.organization_id} AND sb_org.organization_id = {params.organization_id} AND sb_org.billing_status ='Y'"""
+        
+        select="st_org.organization_id, st_org.client_id, st_org.countries_id, st_org.states_id, st_org.regions_id, st_org.subregions_id, st_org.cities_id, st_org.address, DATE_FORMAT(st_org.created_at, '%Y-%m-%d %H:%i:%s') AS created_at, sb_org.billing_organization, sb_org.billing_type, sb_org.billing_price, sb_org.billing_status, sb_org.billing_day, DATE_FORMAT(sb_org.created_at, '%Y-%m-%d %H:%i:%s') AS billing_created_at, mlc.name AS cityes, mls.name AS state, mlco.name AS countries, mlr.name AS subregions, mlsr.name AS regions"
+        
+        table="st_ms_organization AS st_org, md_billing_organization AS sb_org, md_lo_cities AS mlc, md_lo_states AS mls, md_lo_countries AS mlco, md_lo_regions AS mlr, md_lo_subregions AS mlsr"
+        data = select_data(table,select, condition)
         return data
     except Exception as e:
         raise e
