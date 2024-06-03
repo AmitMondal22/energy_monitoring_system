@@ -1,6 +1,7 @@
 from db_model.MASTER_MODEL import select_data,update_data,select_one_data,batch_insert_data,insert_data
 from utils.date_time_format import get_current_datetime, get_current_date_time_utc
 from utils.last12month import last_12_month
+from routes.mqtt_routes import subscribe_topics
 
 
 @staticmethod
@@ -69,6 +70,9 @@ async def add_device(params):
             rows_data.append(row_data)        
         batch_dataid=batch_insert_data("md_device", column, rows_data)
         print("batch_dataid---------------------", batch_dataid)
+        
+        
+        await subscribe_topics()
         return batch_dataid
     except Exception as e:
         raise e

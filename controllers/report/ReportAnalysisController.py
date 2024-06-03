@@ -25,7 +25,7 @@ async def energy_usage_billing(user_data,params):
                                     GROUP BY
                                         date
                                 ) AS sub_ed ON ed.date = sub_ed.date AND ed.time = sub_ed.max_time"""
-                data = select_data(table,select, condition)
+                data = select_data(table,select, condition,order_by="ed.date DESC, ed.time DESC")
                 # data = select_data(table,select, condition,order_by="ed.date DESC, ed.time DESC")
                 # if params.end_date_time == None:
                     #     condition=f"a.client_id={user_data['client_id']} AND a.device_id={params.device_id} AND a.date BETWEEN '{params.start_date_time}' AND '{params.start_date_time}'"
@@ -76,7 +76,7 @@ async def energy_usage_billing(user_data,params):
                                     GROUP BY
                                         date
                                 ) AS sub_ed ON ed.date = sub_ed.date AND ed.time = sub_ed.max_time"""
-                data = select_data(table,select, condition)
+                data = select_data(table,select, condition,order_by="ed.date DESC, ed.time DESC")
         elif user_data['user_type'] == "U" or user_data['user_type'] == "O":
           print("fxgbxd")
           

@@ -350,6 +350,7 @@ async def list_device(request: Request,params:DeviceInfo):
     
 
 
+# @api_client_routes.post("/manage/devices/add")
 @api_client_routes.post("/manage/devices/add", dependencies=[Depends(mw_client)])
 async def add_device(request: Request,params:List[DeviceAdd]):
     try:
