@@ -309,3 +309,18 @@ class OrganizationSettings(BaseModel):
     
 class OrganizationSettingsList(BaseModel):
     organization_id: int
+    
+class AddBill(BaseModel):
+    organization_id: int
+    billing_type: str
+    billing_price: float
+    billing_day: int
+    
+class EditOrganization(BaseModel):
+    organization_id: int
+    countries_id: int
+    states_id: int
+    regions_id: int
+    subregions_id: int
+    cities_id: int
+    address: str

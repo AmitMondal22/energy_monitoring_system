@@ -395,3 +395,37 @@ async def organization_settings_list(client_id,user_id,params):
         return data
     except Exception as e:
         raise e
+    
+@staticmethod
+async def old_bill_list(client_id, user_id, params):
+    try:
+        condition = f"client_id = {client_id} AND organization_id = {params.organization_id} AND billing_status = 'N'"
+        select = "billing_organization, organization_id, client_id, billing_type, billing_price, billing_status, billing_day, created_at"
+        table = "md_billing_organization"
+        data = select_data(table, select, condition,order_by="billing_organization DESC")
+        return data
+    except Exception as e:
+        raise e
+    
+@staticmethod
+async def add_bill(client_id, user_id, params):
+    try:
+        update_condition=f"client_id = {client_id} AND organization_id = {params.organization_id} AND billing_status = 'Y'"
+        set_values={"billing_status":"N"}
+        update_bill=update_data("md_billing_organization",set_values,update_condition)
+        columndata="client_id, organization_id, billing_type, billing_price, billing_status, billing_day, created_by, created_at"
+        insdata=f"{client_id},{params.organization_id},'{params.billing_type}',{params.billing_price},'Y',{params.billing_day},{user_id},'{get_current_datetime()}'"
+        add_billing=insert_data("md_billing_organization",columndata,insdata)
+        return add_billing
+    except Exception as e:
+        raise e
+    
+@staticmethod
+async def edit_organization_info(client_id,user_id,params):
+    try:
+        update_condition=f"client_id = {client_id} AND organization_id = {params.organization_id}"
+        set_values={"countries_id":params.countries_id,"states_id":params.states_id,"regions_id":params.regions_id,"subregions_id":params.subregions_id,"cities_id":params.cities_id,"address":params.address,"create_by":user_id}
+        edit_organization=update_data("st_ms_organization",set_values,update_condition)
+        return edit_organization
+    except Exception as e:
+        raise e

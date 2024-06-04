@@ -7,7 +7,7 @@ from controllers.report import ReportAnalysisController
 
 from models.organization_model import AddOrganization, EditOrganization, DeleteOrganization,ListOrganization
 from models.manage_user_model import AddUser, EditUser,DeleteUser,UserDeviceAdd,UserDeviceEdit,UserDeviceDelete,ListUsers,UserInfo,ClientId,DeviceInfo
-from models.device_data_model import EnergyData,AddAlert,DeviceAdd,DeviceEdit,EditAlert,DeleteAlert,EnergyUsed, VoltageData,OrganizationSettings,OrganizationSettingsList
+from models.device_data_model import EnergyData,AddAlert,DeviceAdd,DeviceEdit,EditAlert,DeleteAlert,EnergyUsed, VoltageData,OrganizationSettings,OrganizationSettingsList,AddBill,EditOrganization
 from models.report_model import EnergyUsageBilling
 
 from Library.DecimalEncoder import DecimalEncoder
@@ -584,7 +584,7 @@ async def organization_settings(request: Request,params:OrganizationSettings):
         raise HTTPException(status_code=500, detail="Internal server error")
     
 @api_client_routes.post("/organization_settings/list", dependencies=[Depends(mw_client)])
-async def organization_settings(request: Request,params:OrganizationSettingsList):
+async def organization_settings_list(request: Request,params:OrganizationSettingsList):
     try:
         userdata=request.state.user_data
         client_id=userdata['client_id']
@@ -598,7 +598,51 @@ async def organization_settings(request: Request,params:OrganizationSettingsList
         raise HTTPException(status_code=500, detail="Internal server error")
     
     
+@api_client_routes.post("/organization_settings/old_bill_list", dependencies=[Depends(mw_client)])
+async def organization_settings_old_bill_list(request: Request,params:OrganizationSettingsList):
+    try:
+        userdata=request.state.user_data
+        client_id=userdata['client_id']
+        user_id=userdata["user_id"]
+        data = await DeviceController.old_bill_list(client_id,user_id,params)
+        resdata = successResponse(data, message="Organization settings")
+        return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
     
+    
+@api_client_routes.post("/organization_settings/add_bill", dependencies=[Depends(mw_client)])
+async def add_bill(request: Request,params:AddBill):
+    try:
+        userdata=request.state.user_data
+        client_id=userdata['client_id']
+        user_id=userdata["user_id"]
+        data = await DeviceController.add_bill(client_id,user_id,params)
+        resdata = successResponse(data, message="Organization settings")
+        return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
+    
+@api_client_routes.post("/organization_settings/edit_organization_info", dependencies=[Depends(mw_client)])
+async def edit_organization_info(request: Request,params:EditOrganization):
+    try:
+        userdata=request.state.user_data
+        client_id=userdata['client_id']
+        user_id=userdata["user_id"]
+        data = await DeviceController.edit_organization_info(client_id,user_id,params)
+        resdata = successResponse(data, message="Organization settings")
+        return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+
     
 # ====================================================================================
 # ====================================================================================
