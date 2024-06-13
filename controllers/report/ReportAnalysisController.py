@@ -92,8 +92,8 @@ async def energy_usage_billing(user_data,params):
 
 @staticmethod
 async def new_energy_usage_billing(user_data,params):
-    # try:
-        if user_data['user_type'] == "C":
+    try:
+        if (user_data['user_type'] == "C") or (user_data['user_type'] == "U" or user_data['user_type'] == "O"):
             if params.report_type == "M": # monthly
                 fdatetdate=first_day_last_day(params.start_date_time)
                 condition = f"""ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id} AND COALESCE(
@@ -114,7 +114,7 @@ async def new_energy_usage_billing(user_data,params):
                 
                 
                 
-              COALESCE(
+                COALESCE(
                     a.billing_price, 
                     (
                         SELECT a2.billing_price 
@@ -275,8 +275,28 @@ async def new_energy_usage_billing(user_data,params):
                 
                 condition2=f"client_id = {user_data['client_id']} AND device_id = {params.device_id} AND date < '{params.start_date_time}'"
                 end_date_last_row=select_one_data("td_energy_data","e1,e2,e3, date,time", condition2, order_by="date DESC, time DESC ")
-        elif user_data['user_type'] == "U" or user_data['user_type'] == "O":
-          print("fxgbxd")
+        # elif user_data['user_type'] == "U" or user_data['user_type'] == "O":
+        #     print("fxgbxd")
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
           
         condition_bill = f"a.organization_id=b.organization_id AND c.organization_id=a.organization_id AND c.countries_id=d.id AND a.client_id = {user_data['client_id']} AND b.client_id={user_data['client_id']} AND a.device_id = {params.device_id}"
         select_bill = "b.*,d.*"
@@ -284,8 +304,8 @@ async def new_energy_usage_billing(user_data,params):
         
         
         return {"data":data , "master_bill":master_bill,"end_date_last_row":end_date_last_row}
-    # except Exception as e:
-    #     return ValueError("Error in energy_usage_billing",e)
+    except Exception as e:
+        return ValueError("Error in energy_usage_billing",e)
         
     
     

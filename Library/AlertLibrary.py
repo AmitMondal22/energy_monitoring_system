@@ -2,6 +2,7 @@ from db_model.MASTER_MODEL import select_data
 from Library.EmailLibrary import send_email
 import json
 def send_alert(client_id, device_id, device, data):
+    print("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT")
     try:
         print("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT")
         select="a.alert_id, a.client_id, a.organization_id, a.device_id, a.device, a.unit_id, a.alert_type, a.alert_value, a.alert_status, DATE_FORMAT(a.created_at, '%Y-%m-%d %H:%i:%s') AS created_at, b.unit,b.unit_name"

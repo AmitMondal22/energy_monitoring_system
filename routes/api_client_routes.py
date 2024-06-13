@@ -4,11 +4,13 @@ from controllers.admin import ClientController, ManageUserController, DeviceMana
 from controllers.unit import UnitController
 from controllers.alert import AlertController
 from controllers.report import ReportAnalysisController
+from controllers.settings import ClientSettingsController
 
 from models.organization_model import AddOrganization, EditOrganization, DeleteOrganization,ListOrganization
 from models.manage_user_model import AddUser, EditUser,DeleteUser,UserDeviceAdd,UserDeviceEdit,UserDeviceDelete,ListUsers,UserInfo,ClientId,DeviceInfo
 from models.device_data_model import EnergyData,AddAlert,DeviceAdd,DeviceEdit,EditAlert,DeleteAlert,EnergyUsed, VoltageData,OrganizationSettings,OrganizationSettingsList,AddBill,EditOrganization
 from models.report_model import EnergyUsageBilling
+from models.client_settings import ClientScreenSettings, ClientScreenSettingsEdit
 
 from Library.DecimalEncoder import DecimalEncoder
 from Library.CustomEncoder import CustomEncoder
@@ -663,14 +665,40 @@ async def energy_usage_billing(request: Request,params:EnergyUsageBilling):
     
 @api_client_routes.post("/report_analysis/new_energy_usage_billing", dependencies=[Depends(mw_user_client)])
 async def new_energy_usage_billing(request: Request,params:EnergyUsageBilling):
-    # try:
+    try:
         userdata=request.state.user_data
         data = await ReportAnalysisController.new_energy_usage_billing(userdata,params)
         resdata = successResponse(data, message="Organization settings")
         print(resdata)
         return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
-    # except ValueError as ve:
-    #     raise HTTPException(status_code=400, detail=str(ve))
-    # except Exception as e:
-    #     raise HTTPException(status_code=500, detail="Internal server error")
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
     
+# ===========================================================
+# ===========================================================
+
+@api_client_routes.post("/settings/client_screen_settings", dependencies=[Depends(mw_client)])
+async def client_screen_settings(request: Request,params:ClientScreenSettings):
+    try:
+        userdata=request.state.user_data
+        data = await ClientSettingsController.client_screen_settings(userdata,params)
+        resdata = successResponse(data, message="Organization settings")
+        return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
+    
+@api_client_routes.post("/settings/client_screen_settings_edit", dependencies=[Depends(mw_client)])
+async def client_screen_settings_edit(request: Request,params:ClientScreenSettingsEdit):
+    try:
+        userdata=request.state.user_data
+        data = await ClientSettingsController.client_screen_settings_edit(userdata,params)
+        resdata = successResponse(data, message="Organization settings add and edit successfully")
+        return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")

@@ -138,45 +138,50 @@ async def send_last_energy_data(client_id, device_id, device):
             # week_date=weekdays_date()
             
             
-            # custom_sql2=f""" SELECT 
-            #                         t.e1, 
-            #                         t.e2, 
-            #                         t.e3, 
-            #                         t.date,
-            #                         t.e1 - LAG(t.e1) OVER (ORDER BY t.date, t.time) AS current_e1,
-            #                         t.e2 - LAG(t.e2) OVER (ORDER BY t.date, t.time) AS current_e2,
-            #                         t.e3 - LAG(t.e3) OVER (ORDER BY t.date, t.time) AS current_e3
-            #                     FROM 
-            #                         td_energy_data t
-            #                     INNER JOIN (
-            #                         SELECT 
-            #                             date, 
-            #                             MAX(CONCAT(date, ' ', time)) AS max_datetime
-            #                         FROM 
-            #                             td_energy_data
-            #                         WHERE 
-            #                             date >= CURDATE() - INTERVAL 8 DAY
-            #                             AND client_id = {client_id} 
-            #                             AND device_id = {device_id}
-            #                             AND device = '{device}'
-            #                         GROUP BY 
-            #                             date
-            #                     ) sub
-            #                     ON CONCAT(t.date, ' ', t.time) = sub.max_datetime
-            #                     WHERE
-            #                         t.client_id = {client_id}
-            #                         AND t.device_id = {device_id}
-            #                         AND t.device = '{device}'
-            #                     ORDER BY 
-            #                         t.date DESC; """
+            custom_sql2=f""" SELECT 
+                                curr.energy_data_id,
+                                curr.client_id,
+                                curr.device_id,
+                                curr.device,
+                                curr.do_channel,
+                                curr.tw,
+                                curr.e1 - COALESCE(curr.prev_e1, 0) AS e1_diff,
+                                curr.e2 - COALESCE(curr.prev_e2, 0) AS e2_diff,
+                                curr.e3 - COALESCE(curr.prev_e3, 0) AS e3_diff,
+                                curr.date,
+                                curr.time
+                            FROM 
+                                (
+                                    SELECT 
+                                        *,
+                                        LAG(e1) OVER (ORDER BY date, time) AS prev_e1,
+                                        LAG(e2) OVER (ORDER BY date, time) AS prev_e2,
+                                        LAG(e3) OVER (ORDER BY date, time) AS prev_e3,
+                                        ROW_NUMBER() OVER (PARTITION BY date ORDER BY time DESC) AS rn
+                                    FROM 
+                                        td_energy_data
+                                    WHERE 
+                                        client_id = {client_id} 
+                                        AND device_id = {device_id}
+                                        AND device = '{device}'
+                                        AND date BETWEEN DATE_SUB(CURDATE(), INTERVAL (WEEKDAY(CURDATE()) + 2) DAY) 
+                                                    AND DATE_SUB(CURDATE(), INTERVAL (WEEKDAY(CURDATE()) - 6) DAY)
+                                ) AS curr
+                            WHERE 
+                                curr.rn = 1
+                            ORDER BY 
+                                curr.date DESC; """
             
-            # lastdata_weekdata=custom_select_sql_query(custom_sql2,None)
-            # print("Last data",lastdata_weekdata)
+            lastdata_weekdata=custom_select_sql_query(custom_sql2,None)
+            print("Last data",lastdata_weekdata)
             background_tasks.add_task(AlertLibrary.send_alert, client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
+            
+            # await AlertLibrary.send_alert(client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
             print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
             
             # await manager.send_personal_message("EMS",client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
-            await sennd_ws_message("EMS",client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
+            twodata={lastdata_weekdata:lastdata_weekdata,lastdata:lastdata}
+            await sennd_ws_message("EMS",client_id, device_id, device, json.dumps(twodata, cls=DecimalEncoder))
             return json.dumps(lastdata, cls=DecimalEncoder)
         except Exception as e:
             raise ValueError("Could not fetch data",e)
