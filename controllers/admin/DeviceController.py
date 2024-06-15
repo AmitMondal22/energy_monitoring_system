@@ -399,7 +399,8 @@ async def organization_settings_list(client_id,user_id,params):
 @staticmethod
 async def old_bill_list(client_id, user_id, params):
     try:
-        condition = f"client_id = {client_id} AND organization_id = {params.organization_id} AND billing_status = 'N'"
+        condition = f"client_id = {client_id} AND organization_id = {params.organization_id}"
+        # condition = f"client_id = {client_id} AND organization_id = {params.organization_id} AND billing_status = 'N'"
         select = "billing_organization, organization_id, client_id, billing_type, billing_price, billing_status, billing_day, created_at"
         table = "md_billing_organization"
         data = select_data(table, select, condition,order_by="billing_organization DESC")
