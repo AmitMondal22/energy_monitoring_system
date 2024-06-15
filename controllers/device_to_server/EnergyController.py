@@ -172,7 +172,7 @@ async def send_last_energy_data(client_id, device_id, device):
                             ORDER BY 
                                 curr.date DESC; """
             
-            lastdata_weekdata=custom_select_sql_query(custom_sql2,None)
+            lastdata_weekdata=custom_select_sql_query(custom_sql2,1)
             print("Last data",lastdata_weekdata)
             background_tasks.add_task(AlertLibrary.send_alert, client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
             
