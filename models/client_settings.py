@@ -11,7 +11,7 @@ class ClientScreenSettings(BaseModel):
     organization_id: int
     
 class ClientScreenSettingsEdit(BaseModel):
-    id_view_organization: Optional[int]
+    id_view_organization: Optional[int] = None
     user_type : str
     organization_id : int  
     gv_energy_used : YNEnum 
