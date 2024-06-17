@@ -20,7 +20,7 @@ async def client_screen_settings_edit(user, params):
             table="st_view_organization"
             columns="user_type, client_id, organization_id, gv_energy_used, gv_voltage, gv_current, gv_power, mn_add_organization, mn_device_management, mn_user_management, en_tab_device_info, en_tab_create_alert, en_tab_scheduling, en_tab_report_analysi, created_by, created_at, updated_at"
             
-            values=f"{params.user_type} ,{user['client_id']}, {params.organization_id}, '{params.gv_energy_used}', '{params.gv_voltage}', '{params.gv_current}', '{params.gv_power}', '{params.mn_add_organization}', '{params.mn_device_management}', '{params.mn_user_management}', '{params.en_tab_device_info}', '{params.en_tab_create_alert}', '{params.en_tab_scheduling}', '{params.en_tab_report_analysi}', {user['user_id']},'{current_datetime}','{current_datetime}'"
+            values=f"{params.user_type} ,{user['client_id']}, {params.organization_id}, '{params.gv_energy_used.value}', '{params.gv_voltage}', '{params.gv_current}', '{params.gv_power}', '{params.mn_add_organization}', '{params.mn_device_management}', '{params.mn_user_management}', '{params.en_tab_device_info}', '{params.en_tab_create_alert}', '{params.en_tab_scheduling}', '{params.en_tab_report_analysi}', {user['user_id']},'{current_datetime}','{current_datetime}'"
             data=insert_data(table, columns, values)
             
             
