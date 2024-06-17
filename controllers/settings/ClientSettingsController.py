@@ -21,6 +21,7 @@ async def client_screen_settings_edit(user, params):
             columns="user_type, client_id, organization_id, gv_energy_used, gv_voltage, gv_current, gv_power, mn_add_organization, mn_device_management, mn_user_management, en_tab_device_info, en_tab_create_alert, en_tab_scheduling, en_tab_report_analysis, created_by, created_at, updated_at"
             
             values=f"{params.user_type} ,{user['client_id']}, {params.organization_id}, '{params.gv_energy_used.value}', '{params.gv_voltage.value}', '{params.gv_current.value}', '{params.gv_power.value}', '{params.mn_add_organization.value}', '{params.mn_device_management.value}', '{params.mn_user_management.value}', '{params.en_tab_device_info.value}', '{params.en_tab_create_alert.value}', '{params.en_tab_scheduling.value}', '{params.en_tab_report_analysi.value}', {user['user_id']},'{current_datetime}','{current_datetime}'"
+            print("heoolo")
             data=insert_data(table, columns, values)
             
             
