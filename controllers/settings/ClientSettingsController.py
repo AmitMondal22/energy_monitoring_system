@@ -3,7 +3,7 @@ from utils.date_time_format import get_current_datetime
 
 async def client_screen_settings(user, params):
     try:
-        data = select_data("st_view_organization", "*", f"client_id = {user["client_id"]} AND organization_id = {params.organization_id}")
+        data = select_data("st_view_organization", "*", f"client_id = {user['client_id']} AND organization_id = {params.organization_id}")
         return data
     except Exception as e:
         raise e
@@ -26,7 +26,7 @@ async def client_screen_settings_edit(user, params):
             
             
             
-        data = select_one_data("st_view_organization", "*", f"client_id = {user["client_id"]} AND organization_id = {params.organization_id}")
+        data = select_one_data("st_view_organization", "*", f"client_id = {user['client_id']} AND organization_id = {params.organization_id}")
         return data
     except Exception as e:
         raise e
